@@ -1,0 +1,9 @@
+# ignore builded files
+**/bin
+
+#ignore library files
+**/libs
+
+#jade build files
+APDescription.txt
+MTPs-Main-Container.txt
