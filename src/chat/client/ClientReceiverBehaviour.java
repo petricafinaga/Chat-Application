@@ -3,6 +3,7 @@ package chat.client;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
+@SuppressWarnings("serial")
 public class ClientReceiverBehaviour extends CyclicBehaviour {
 
 	private ClientAgent myAgent;

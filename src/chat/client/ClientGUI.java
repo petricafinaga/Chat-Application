@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
+@SuppressWarnings("serial")
 public class ClientGUI extends JFrame {
 
 	private JPanel contentPane;
@@ -22,10 +23,10 @@ public class ClientGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		JList chatList = new JList();
+		JList<String> chatList = new JList<>();
 		chatList.setValueIsAdjusting(true);
 		chatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		chatList.setModel(new AbstractListModel() {
+		chatList.setModel(new AbstractListModel<String>() {
 			String[] values = new String[] { "asdasd", "asd", "asd", "as", "d", "asdasd" };
 
 			@Override
@@ -34,7 +35,7 @@ public class ClientGUI extends JFrame {
 			}
 
 			@Override
-			public Object getElementAt(int index) {
+			public String getElementAt(int index) {
 				return values[index];
 			}
 		});
