@@ -2,7 +2,6 @@ package chat.client;
 
 import java.awt.EventQueue;
 
-import chat.server.ServerAgent;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
@@ -29,7 +28,6 @@ public class ClientAgent extends Agent {
 		try {
 			// Register chat-client to DF
 			DFService.register(this, dfd);
-			ServerAgent.register(this, dfd);
 
 			EventQueue.invokeLater(new Runnable() {
 				@Override
