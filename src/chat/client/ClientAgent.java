@@ -8,6 +8,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
 
 @SuppressWarnings("serial")
 public class ClientAgent extends Agent {
@@ -29,6 +30,8 @@ public class ClientAgent extends Agent {
 			// Register chat-client to DF
 			DFService.register(this, dfd);
 
+			// Subscribe to Local Server
+			SubscribeToServer();
 			EventQueue.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -60,6 +63,17 @@ public class ClientAgent extends Agent {
 	}
 
 	public void OnMessage(String message, AID sender) {
-		System.out.println(message + " " + sender.getName());
+		System.out.println("Received on: " + this.getLocalName() + " : " + message);
+	}
+
+	private void SubscribeToServer() {
+		AID receiverAid = new AID();
+		receiverAid.setLocalName("ChatServer");
+
+		ACLMessage message = new ACLMessage(ACLMessage.SUBSCRIBE);
+		message.setContent("Alias");
+		message.addReceiver(receiverAid);
+
+		this.send(message);
 	}
 }
