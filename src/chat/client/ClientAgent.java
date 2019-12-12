@@ -44,7 +44,7 @@ public class ClientAgent extends Agent {
 				}
 			});
 
-			ClientReceiverBehaviour receiverBehaviour = new ClientReceiverBehaviour(this);
+			final ClientReceiverBehaviour receiverBehaviour = new ClientReceiverBehaviour(this);
 			this.addBehaviour(receiverBehaviour);
 
 		} catch (FIPAException e) {
@@ -67,10 +67,10 @@ public class ClientAgent extends Agent {
 	}
 
 	private void SubscribeToServer() {
-		AID receiverAid = new AID();
+		final AID receiverAid = new AID();
 		receiverAid.setLocalName("ChatServer");
 
-		ACLMessage message = new ACLMessage(ACLMessage.SUBSCRIBE);
+		final ACLMessage message = new ACLMessage(ACLMessage.SUBSCRIBE);
 		message.setContent("Alias");
 		message.addReceiver(receiverAid);
 

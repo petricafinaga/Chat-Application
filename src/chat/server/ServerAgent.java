@@ -21,7 +21,7 @@ public class ServerAgent extends Agent {
 	@Override
 	protected void setup() {
 
-		ServerReceiverBehaviour receiverBehaviour = new ServerReceiverBehaviour(this);
+		final ServerReceiverBehaviour receiverBehaviour = new ServerReceiverBehaviour(this);
 		addBehaviour(receiverBehaviour);
 	}
 
@@ -40,12 +40,12 @@ public class ServerAgent extends Agent {
 	private void NotifyAllOnlineAgents() {
 
 		// Create an array of JSON objects which represents all the serialized agents
-		StringBuilder sbBuilder = new StringBuilder();
+		final StringBuilder sbBuilder = new StringBuilder();
 		sbBuilder.append('[');
 
 		for (Map.Entry<AID, ChatClient> entry : chatClientsMap.entrySet()) {
 
-			ChatClient client = entry.getValue();
+			final ChatClient client = entry.getValue();
 			if (client.getStatus() == ClientStatus.Online) {
 				sbBuilder.append(entry.getValue().toString());
 				sbBuilder.append(',');
@@ -55,9 +55,9 @@ public class ServerAgent extends Agent {
 		sbBuilder.deleteCharAt(sbBuilder.lastIndexOf(","));
 		sbBuilder.append(']');
 
-		String agentsJson = sbBuilder.toString();
+		final String agentsJson = sbBuilder.toString();
 		for (Map.Entry<AID, ChatClient> entry : chatClientsMap.entrySet()) {
-			ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+			final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 
 			message.addReceiver(entry.getKey());
 			message.setContent(agentsJson);

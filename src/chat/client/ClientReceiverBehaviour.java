@@ -15,7 +15,7 @@ public class ClientReceiverBehaviour extends CyclicBehaviour {
 
 	@Override
 	public void action() {
-		ACLMessage message = myAgent.receive();
+		final ACLMessage message = myAgent.receive();
 
 		if (null != message) {
 			myAgent.OnMessage(message.getContent(), message.getSender());

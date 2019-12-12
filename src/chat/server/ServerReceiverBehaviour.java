@@ -38,7 +38,7 @@ public class ServerReceiverBehaviour extends CyclicBehaviour {
 	}
 
 	private void HandleAgentSubscription(ACLMessage message) {
-		String alias = message.getContent();
+		final String alias = message.getContent();
 		if (alias.equals(""))
 			return;
 
