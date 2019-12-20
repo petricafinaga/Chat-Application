@@ -2,6 +2,7 @@ package chat.server;
 
 import chat.client.ChatClient;
 import chat.client.ChatClient.ClientStatus;
+import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -17,7 +18,7 @@ public class ServerReceiverBehaviour extends CyclicBehaviour {
 
 	@Override
 	public void action() {
-		ACLMessage message = myAgent.receive();
+		final ACLMessage message = myAgent.receive();
 
 		if (null != message) {
 			switch (message.getPerformative()) {
@@ -42,11 +43,11 @@ public class ServerReceiverBehaviour extends CyclicBehaviour {
 		if (alias.equals(""))
 			return;
 
-		this.myAgent.OnClientSubscribe(message.getSender(),
-				new ChatClient(message.getSender().getName(), alias, ClientStatus.Online));
+		final AID aid = message.getSender();
+		this.myAgent.OnClientSubscribe(aid, new ChatClient(aid.getName(), alias, ClientStatus.Online));
 	}
 
 	private void HandleAgentUnsubscription(ACLMessage message) {
-		this.myAgent.OnClientUnsubscribe(message.getSender());
+		this.myAgent.OnClientUnsubscribe(message.getSender().getName());
 	}
 }

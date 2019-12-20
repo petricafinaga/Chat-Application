@@ -1,7 +1,5 @@
 package chat.client;
 
-import com.google.gson.Gson;
-
 public class ChatClient {
 
 	public static enum ClientStatus {
@@ -41,11 +39,5 @@ public class ChatClient {
 
 	public void SetStatus(ClientStatus status) {
 		this.status = status;
-	}
-
-	@Override
-	public String toString() {
-		Gson gson = new Gson();
-		return gson.toJson(this);
 	}
 }
