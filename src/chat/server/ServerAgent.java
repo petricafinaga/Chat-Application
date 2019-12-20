@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import chat.client.ChatClient;
+import chat.client.ChatClient.ClientStatus;
 import common.Utils;
 import jade.core.AID;
 import jade.core.Agent;
@@ -31,14 +32,17 @@ public class ServerAgent extends Agent {
 
 		SendAllAgentsToClient(aid);
 		NotifyAllOnlineAgents(client);
-		this.chatClientsMap.putIfAbsent(aid.getName(), client); // TO DO: Verify if already exists in map, and just
-																// change the status
+
+		final String name = aid.getName();
+		chatClientsMap.put(name, client);
 	}
 
 	protected void OnClientUnsubscribe(String name) {
 
-//		this.chatClientsMap.remove(name); // TO DO: Do not remove client, just change the status to offline
-		NotifyAllOnlineAgents(null);
+		final ChatClient client = chatClientsMap.get(name);
+		client.SetStatus(ClientStatus.Offline);
+
+		NotifyAllOnlineAgents(client);
 	}
 
 	private void SendAllAgentsToClient(AID aid) {
@@ -54,11 +58,12 @@ public class ServerAgent extends Agent {
 	private void NotifyAllOnlineAgents(ChatClient client) {
 
 		final String clientJson = Utils.ToJson(client);
-		System.out.println("cucuc" + clientJson);
+		for (final Map.Entry<String, ChatClient> key : chatClientsMap.entrySet()) {
+			if (key.getValue().getStatus() != ClientStatus.Online)
+				continue;
 
-		for (String name : chatClientsMap.keySet()) {
 			final AID aid = new AID();
-			aid.setName(name);
+			aid.setName(key.getKey());
 
 			final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 			message.addReceiver(aid);
