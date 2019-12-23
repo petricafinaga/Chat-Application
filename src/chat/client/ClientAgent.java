@@ -2,20 +2,30 @@ package chat.client;
 
 import java.awt.EventQueue;
 
+import common.Message;
+import common.Message.MessageType;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 
 @SuppressWarnings("serial")
-public class ClientAgent extends Agent {
+public final class ClientAgent extends Agent {
+	private final String fServerName = "ChatServer";
 
+	private AID serverAid;
 	private ClientGUI clientGui;
+
+	public ClientAgent() {
+		serverAid = new AID();
+		serverAid.setLocalName(fServerName);
+	}
 
 	@Override
 	protected void setup() {
 
 		// Subscribe to Local Server
 		SubscribeToServer();
+
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -38,26 +48,31 @@ public class ClientAgent extends Agent {
 		clientGui.dispose();
 	}
 
-	public void OnMessage(String message, AID sender) {
-		System.out.println("Received on: " + this.getLocalName() + " : " + message);
+	public void OnAllClients() {
+		// TO DO
+	}
+
+	public void OnClientUpdate() {
+		// TO DO
 	}
 
 	private void SubscribeToServer() {
-		final AID receiverAid = new AID();
-		receiverAid.setLocalName("ChatServer");
 
-		final ACLMessage message = new ACLMessage(ACLMessage.SUBSCRIBE);
-		message.setContent("Alias");
-		message.addReceiver(receiverAid);
+		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+
+		message.addReceiver(serverAid);
+		message.setContent(new Message(MessageType.Subscribe, "Petrica").toString());
 
 		this.send(message);
 	}
 
 	private void UnsubscribeFromServer() {
-		final AID receiverAid = new AID();
-		receiverAid.setLocalName("ChatServer");
 
-		final ACLMessage message = new ACLMessage(ACLMessage.CANCEL);
-		message.addReceiver(receiverAid);
+		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+
+		message.addReceiver(serverAid);
+		message.setContent(new Message(MessageType.Unsubscribe, null).toString());
+
+		this.send(message);
 	}
 }

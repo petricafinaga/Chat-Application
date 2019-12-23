@@ -13,7 +13,7 @@ import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 
 @SuppressWarnings("serial")
-public class ServerAgent extends Agent {
+public final class ServerAgent extends Agent {
 
 	// Map that contains <Name, ChatClient> pair for each chatClient that has
 	// subscribed to server
@@ -49,7 +49,7 @@ public class ServerAgent extends Agent {
 
 	private void SendAllAgentsToClient(AID aid) {
 
-		ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 
 		message.addReceiver(aid);
 		message.setContent(new Message(MessageType.AllClients, Utils.ToJson(chatClientsMap.values())).toString());
@@ -70,6 +70,7 @@ public class ServerAgent extends Agent {
 			final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 			message.addReceiver(aid);
 			message.setContent(content);
+
 			this.send(message);
 		}
 	}

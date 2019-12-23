@@ -9,7 +9,7 @@ public class Utils {
 		return gson.toJson(container);
 	}
 
-	public static <T> T ToObject(String json) {
-		return gson.fromJson(json, T.class);
+	public static <T> T ToObject(String json, Class<T> className) {
+		return gson.fromJson(json, className);
 	}
 }
