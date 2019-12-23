@@ -2,7 +2,8 @@
 **/bin
 
 #ignore library files
-**/libs
+libs/*
+!libs/.gitkeep
 
 #jade build files
 APDescription.txt

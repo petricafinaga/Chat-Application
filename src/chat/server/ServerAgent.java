@@ -5,13 +5,15 @@ import java.util.Map;
 
 import chat.client.ChatClient;
 import chat.client.ChatClient.ClientStatus;
+import common.Message;
+import common.Message.MessageType;
 import common.Utils;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 
 @SuppressWarnings("serial")
-public class ServerAgent extends Agent {
+public final class ServerAgent extends Agent {
 
 	// Map that contains <Name, ChatClient> pair for each chatClient that has
 	// subscribed to server
@@ -47,17 +49,17 @@ public class ServerAgent extends Agent {
 
 	private void SendAllAgentsToClient(AID aid) {
 
-		ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 
 		message.addReceiver(aid);
-		message.setContent(Utils.ToJson(chatClientsMap.values()));
+		message.setContent(new Message(MessageType.AllClients, Utils.ToJson(chatClientsMap.values())).toString());
 
 		this.send(message);
 	}
 
 	private void NotifyAllOnlineAgents(ChatClient client) {
 
-		final String clientJson = Utils.ToJson(client);
+		final String content = new Message(MessageType.ClientUpdate, Utils.ToJson(client)).toString();
 		for (final Map.Entry<String, ChatClient> key : chatClientsMap.entrySet()) {
 			if (key.getValue().getStatus() != ClientStatus.Online)
 				continue;
@@ -67,7 +69,8 @@ public class ServerAgent extends Agent {
 
 			final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 			message.addReceiver(aid);
-			message.setContent(clientJson);
+			message.setContent(content);
+
 			this.send(message);
 		}
 	}
