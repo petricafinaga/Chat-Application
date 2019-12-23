@@ -1,5 +1,7 @@
 package chat.server;
 
+import javax.swing.text.AbstractDocument.Content;
+
 import chat.client.ChatClient;
 import chat.client.ChatClient.ClientStatus;
 import jade.core.AID;
@@ -21,7 +23,8 @@ public class ServerReceiverBehaviour extends CyclicBehaviour {
 		final ACLMessage message = myAgent.receive();
 
 		if (null != message) {
-			switch (message.getPerformative()) {
+			final String content = message.getContent();
+			switch (message.) {
 
 			// Handle SUBSCRIBE message from chat client agent
 			case ACLMessage.SUBSCRIBE:
