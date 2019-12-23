@@ -48,11 +48,11 @@ public final class ClientAgent extends Agent {
 		clientGui.dispose();
 	}
 
-	public void OnAllClients() {
+	public void OnAllClients(ChatClient[] clients) {
 		// TO DO
 	}
 
-	public void OnClientUpdate() {
+	public void OnClientUpdate(ChatClient client) {
 		// TO DO
 	}
 
