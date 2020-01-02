@@ -1,7 +1,5 @@
 package chat.client;
 
-import java.awt.EventQueue;
-
 import common.Message;
 import common.Message.MessageType;
 import jade.core.AID;
@@ -20,33 +18,28 @@ public final class ClientAgent extends Agent {
 		serverAid.setLocalName(fServerName);
 	}
 
+	/**
+	 * Override methods from inherited class
+	 */
 	@Override
 	protected void setup() {
 
 		// Subscribe to Local Server
 		SubscribeToServer();
 
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					clientGui = new ClientGUI();
-					clientGui.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		clientGui = new ClientGUI();
+		clientGui.setVisible(true);
 
 		final ClientReceiverBehaviour receiverBehaviour = new ClientReceiverBehaviour(this);
 		this.addBehaviour(receiverBehaviour);
 	}
 
 	@Override
-	public void takeDown() {
+	protected void takeDown() {
 		UnsubscribeFromServer();
 		clientGui.dispose();
 	}
+	/* End override methods from inherited class */
 
 	public void OnAllClients(ChatClient[] clients) {
 		// TO DO
@@ -54,6 +47,22 @@ public final class ClientAgent extends Agent {
 
 	public void OnClientUpdate(ChatClient client) {
 		// TO DO
+	}
+
+	public void OnTextMessage(String clientName, String messageText) {
+		// TO DO
+	}
+
+	public void SendMessage(String clientName, Message msg) {
+
+		final AID aid = new AID();
+		aid.setName(clientName);
+
+		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+		message.addReceiver(aid);
+		message.setContent(msg.toString());
+
+		this.send(message);
 	}
 
 	private void SubscribeToServer() {

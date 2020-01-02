@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 public class Message {
 
 	public static enum MessageType {
-		Subscribe, Unsubscribe, AllClients, ClientUpdate
+		Subscribe, Unsubscribe, AllClients, ClientUpdate, TextMessage,
 	}
 
 	private MessageType messageType;

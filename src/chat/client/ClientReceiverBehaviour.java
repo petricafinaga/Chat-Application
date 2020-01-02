@@ -27,18 +27,18 @@ public final class ClientReceiverBehaviour extends CyclicBehaviour {
 			// Handle AllClients message from server
 			case AllClients:
 				final ChatClient[] clients = Utils.ToObject(content.getMessage(), ChatClient[].class);
-				System.out.println("On " + myAgent.getLocalName() + ": AllClients -->" + content.getMessage()); // TO BE
-																												// Removed
 				myAgent.OnAllClients(clients);
 				break;
 
 			// Handle ClientUpdate message from server
 			case ClientUpdate:
 				final ChatClient client = Utils.ToObject(content.getMessage(), ChatClient.class);
-				System.out.println("On " + myAgent.getLocalName() + ": ClientUpdate -->" + content.getMessage()); // TO
-																													// BE
-																													// Removed
 				myAgent.OnClientUpdate(client);
+				break;
+
+			// Handle TextMessage from chat-client
+			case TextMessage:
+				myAgent.OnTextMessage(message.getSender().getName(), content.getMessage());
 				break;
 
 			default:
