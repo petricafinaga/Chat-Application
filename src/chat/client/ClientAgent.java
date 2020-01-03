@@ -12,6 +12,7 @@ public final class ClientAgent extends Agent {
 
 	private AID serverAid;
 	private ClientGUI clientGui;
+	private ClientAgent agent = this;
 
 	public ClientAgent() {
 		serverAid = new AID();
@@ -27,7 +28,7 @@ public final class ClientAgent extends Agent {
 		// Subscribe to Local Server
 		SubscribeToServer();
 
-		clientGui = new ClientGUI();
+		clientGui = new ClientGUI(agent);
 		clientGui.setVisible(true);
 
 		final ClientReceiverBehaviour receiverBehaviour = new ClientReceiverBehaviour(this);
