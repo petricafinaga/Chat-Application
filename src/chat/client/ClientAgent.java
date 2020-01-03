@@ -44,10 +44,12 @@ public final class ClientAgent extends Agent {
 
 	public void OnAllClients(ChatClient[] clients) {
 		// TO DO
+		clientGui.GUIAddUsers(clients);
 	}
 
 	public void OnClientUpdate(ChatClient client) {
 		// TO DO
+		clientGui.GUIAddOrModifyUserStatus(client);
 	}
 
 	public void OnTextMessage(String clientName, String messageText) {
