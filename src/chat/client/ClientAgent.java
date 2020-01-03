@@ -73,7 +73,7 @@ public final class ClientAgent extends Agent {
 		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 
 		message.addReceiver(serverAid);
-		message.setContent(new Message(MessageType.Subscribe, "Petrica").toString());
+		message.setContent(new Message(MessageType.Subscribe, "user-"+Math.random()).toString());
 
 		this.send(message);
 	}

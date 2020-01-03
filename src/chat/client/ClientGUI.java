@@ -4,6 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
 
@@ -19,6 +21,10 @@ import java.util.Vector;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import common.Message;
+import common.Message.MessageType;
+
 import java.awt.Dimension;
 
 @SuppressWarnings("serial")
@@ -107,6 +113,15 @@ public class ClientGUI extends JFrame {
 		usersTable.setLocation(592, 11);
 		usersTable.setSize(new Dimension(230, 403));
 		usersTable.setTableHeader(null);
+		usersTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				// TODO Auto-generated method stub
+				talkingNowLabel.setText(usersTable.getValueAt(usersTable.getSelectedRow(), 0).toString());
+				
+			}
+		});
 		usersScrollPane = new JScrollPane(usersTable);
 		usersScrollPane.setBounds(592, 11, 230, 403);
 		contentPane.add(usersScrollPane);
@@ -119,14 +134,16 @@ public class ClientGUI extends JFrame {
 //		Text Pane to show all messages in current conversation
 		messagesTextArea = new JTextPane();
 		messagesTextArea.setBounds(10, 47, 572, 339);
+		messagesTextArea.setEditable(false);
 		messagesScrollPane = new JScrollPane(messagesTextArea);
 		messagesScrollPane.setBounds(10, 47, 572, 339);
 		contentPane.add(messagesScrollPane);
-
+		
+//		Send the message to the highlighted user
 		sendButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-
+				clientAgent.SendMessage(talkingNowLabel.getText(), new Message(MessageType.TextMessage, currentMessage.getText()));
 			}
 		});
 
@@ -157,5 +174,11 @@ public class ClientGUI extends JFrame {
 			usersTableModel.addRow(data);
 			updatesLabel.setText(client.getAlias() + " went " + client.getStatus().toString());
 		}
+	}
+	
+	public void GUIDisplayReceivedMessage(String clientName, String message) {
+		String msgToDisplay = "\n" + clientName + ": " + message;
+		messagesTextArea.setText(messagesTextArea.getText() + msgToDisplay);
+		
 	}
 }
