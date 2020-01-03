@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import java.awt.Font;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -21,10 +22,15 @@ import java.util.Vector;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import common.Message;
 import common.Message.MessageType;
 
+import java.awt.Color;
 import java.awt.Dimension;
 
 @SuppressWarnings("serial")
@@ -42,7 +48,12 @@ public class ClientGUI extends JFrame {
 	JScrollPane usersScrollPane;
 	JScrollPane currentMessageScrollPane;
 	JLabel updatesLabel;
-	JTextPane messagesTextArea;
+	JTextPane messagesTextPane;
+	StyledDocument messagesDoc;
+	Style receivedMessageStyle;
+	Style myMessageStyle;
+
+	String talkingNowClient = null;
 
 	DefaultTableModel usersTableModel;
 
@@ -107,21 +118,32 @@ public class ClientGUI extends JFrame {
 
 //		Table to show users and their status
 		usersTableModel = new DefaultTableModel(0, 0);
-		String header[] = new String[] { "ID", "Status" };
+		String header[] = new String[] { "ID", "Status", "agentName" }; // agent Name is hidden in the table
 		usersTableModel.setColumnIdentifiers(header);
-		usersTable = new JTable(usersTableModel);
+		usersTable = new JTable(usersTableModel) {
+//			Disables the cell editing feature in the users table
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 		usersTable.setLocation(592, 11);
 		usersTable.setSize(new Dimension(230, 403));
 		usersTable.setTableHeader(null);
+		usersTable.setDefaultEditor(Object.class, null);
 		usersTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			
+
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				// TODO Auto-generated method stub
-				talkingNowLabel.setText(usersTable.getValueAt(usersTable.getSelectedRow(), 0).toString());
-				
+				talkingNowClient = usersTableModel.getValueAt(usersTable.getSelectedRow(), 2).toString();
+				talkingNowLabel.setText(usersTableModel.getValueAt(usersTable.getSelectedRow(), 0).toString());
+
 			}
 		});
+
+		usersTable.getColumnModel().getColumn(2).setMinWidth(0);
+		usersTable.getColumnModel().getColumn(2).setMaxWidth(0);
+		usersTable.getColumnModel().getColumn(2).setWidth(0);
 		usersScrollPane = new JScrollPane(usersTable);
 		usersScrollPane.setBounds(592, 11, 230, 403);
 		contentPane.add(usersScrollPane);
@@ -132,18 +154,37 @@ public class ClientGUI extends JFrame {
 		contentPane.add(updatesLabel);
 
 //		Text Pane to show all messages in current conversation
-		messagesTextArea = new JTextPane();
-		messagesTextArea.setBounds(10, 47, 572, 339);
-		messagesTextArea.setEditable(false);
-		messagesScrollPane = new JScrollPane(messagesTextArea);
+		messagesTextPane = new JTextPane();
+		messagesTextPane.setBounds(10, 47, 572, 339);
+		messagesTextPane.setEditable(false);
+		messagesDoc = messagesTextPane.getStyledDocument();
+		receivedMessageStyle = messagesTextPane.addStyle("", null);
+		myMessageStyle = messagesTextPane.addStyle("", null);
+		StyleConstants.setForeground(receivedMessageStyle, Color.orange);
+		StyleConstants.setForeground(myMessageStyle, Color.black);
+		messagesScrollPane = new JScrollPane(messagesTextPane);
 		messagesScrollPane.setBounds(10, 47, 572, 339);
 		contentPane.add(messagesScrollPane);
-		
+
 //		Send the message to the highlighted user
 		sendButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				clientAgent.SendMessage(talkingNowLabel.getText(), new Message(MessageType.TextMessage, "Salut"));
+				Message msg = new Message(MessageType.TextMessage, currentMessage.getText());
+				if (talkingNowClient == null)
+					JOptionPane.showMessageDialog(null, "Please select a user from the list!");
+				else {
+					clientAgent.SendMessage(talkingNowClient, msg);
+//					messagesTextPane.setText(messagesTextPane.getText() + "Me: " + currentMessage.getText() + "\n");
+					try {
+						messagesDoc.insertString(messagesDoc.getLength(), "Me: " + currentMessage.getText() + "\n",
+								myMessageStyle);
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				currentMessage.setText("");
 			}
 		});
 
@@ -154,6 +195,7 @@ public class ClientGUI extends JFrame {
 			Vector<String> data = new Vector<String>();
 			data.add(chatClient.getAlias());
 			data.add(chatClient.getStatus().toString());
+			data.add(chatClient.getName());
 			usersTableModel.addRow(data);
 		}
 	}
@@ -163,7 +205,6 @@ public class ClientGUI extends JFrame {
 		for (int i = 0; i < usersTableModel.getRowCount(); i++) {
 			if (usersTableModel.getValueAt(i, 0).equals(client.getAlias())) {
 				usersTableModel.setValueAt(client.getStatus().toString(), i, 1);
-				updatesLabel.setText(client.getAlias() + " went " + client.getStatus().toString());
 				found = true;
 			}
 		}
@@ -171,14 +212,25 @@ public class ClientGUI extends JFrame {
 			Vector<String> data = new Vector<String>();
 			data.add(client.getAlias());
 			data.add(client.getStatus().toString());
+			data.add(client.getName());
 			usersTableModel.addRow(data);
-			updatesLabel.setText(client.getAlias() + " went " + client.getStatus().toString());
 		}
+		updatesLabel.setText(client.getAlias() + " went " + client.getStatus().toString());
 	}
-	
+
 	public void GUIDisplayReceivedMessage(String clientName, String message) {
-		String msgToDisplay = "\n" + clientName + ": " + message;
-		messagesTextArea.setText(messagesTextArea.getText() + msgToDisplay);
-		
+		String clientAlias = "";
+		for (int i = 0; i < usersTableModel.getRowCount(); i++) {
+			if (usersTableModel.getValueAt(i, 2).equals(clientName)) {
+				clientAlias = usersTableModel.getValueAt(i, 0).toString();
+			}
+		}
+		String msgToDisplay = clientAlias + ": " + message + "\n";
+		try {
+			messagesDoc.insertString(messagesDoc.getLength(), msgToDisplay, receivedMessageStyle);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

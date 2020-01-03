@@ -53,6 +53,7 @@ public final class ClientAgent extends Agent {
 
 	public void OnTextMessage(String clientName, String messageText) {
 		// TO DO
+		clientGui.GUIDisplayReceivedMessage(clientName, messageText);
 	}
 
 	public void SendMessage(String clientName, Message msg) {
