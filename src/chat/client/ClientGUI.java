@@ -14,8 +14,11 @@ import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Vector;
@@ -53,10 +56,9 @@ public class ClientGUI extends JFrame {
 	Style receivedMessageStyle;
 	Style myMessageStyle;
 	Style userNameStyle;
-	
+
 	Color myMessageColor = Color.black;
 	Color receivedMessageColor = Color.orange;
-	
 
 	String talkingNowClient = null;
 
@@ -105,6 +107,28 @@ public class ClientGUI extends JFrame {
 		currentMessage.setBounds(10, 397, 474, 39);
 		currentMessageScrollPane = new JScrollPane(currentMessage);
 		currentMessageScrollPane.setBounds(10, 397, 474, 39);
+		currentMessage.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if (e.getKeyCode() == KeyEvent.VK_ENTER)
+					sendButton.doClick();
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		currentMessage.getDocument().putProperty("filterNewlines", Boolean.TRUE);
 		contentPane.add(currentMessageScrollPane);
 
 //		Button to send the message
@@ -162,24 +186,23 @@ public class ClientGUI extends JFrame {
 		messagesTextPane = new JTextPane();
 		messagesTextPane.setBounds(10, 47, 572, 339);
 		messagesTextPane.setEditable(false);
-		
+
 		messagesDoc = messagesTextPane.getStyledDocument();
-		
+//		Styles to show different messages
 		receivedMessageStyle = messagesTextPane.addStyle("", null);
 		myMessageStyle = messagesTextPane.addStyle("", null);
 		userNameStyle = messagesTextPane.addStyle("", null);
 		StyleConstants.setForeground(receivedMessageStyle, receivedMessageColor);
 		StyleConstants.setForeground(myMessageStyle, myMessageColor);
 		StyleConstants.setBold(userNameStyle, true);
-		
 		messagesScrollPane = new JScrollPane(messagesTextPane);
 		messagesScrollPane.setBounds(10, 47, 572, 339);
 		contentPane.add(messagesScrollPane);
 
 //		Send the message to the highlighted user
-		sendButton.addMouseListener(new MouseAdapter() {
+		sendButton.addActionListener(new ActionListener() {
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
+			public void actionPerformed(ActionEvent evt) {
 				Message msg = new Message(MessageType.TextMessage, currentMessage.getText());
 				if (talkingNowClient == null)
 					JOptionPane.showMessageDialog(null, "Please select a user from the list!");
@@ -187,10 +210,13 @@ public class ClientGUI extends JFrame {
 					clientAgent.SendMessage(talkingNowClient, msg);
 					StyleConstants.setForeground(userNameStyle, myMessageColor);
 					try {
-						
-						messagesDoc.insertString(messagesDoc.getLength(), "Me: ",userNameStyle);
-						messagesDoc.insertString(messagesDoc.getLength(), currentMessage.getText() + "\n",
-								myMessageStyle);
+
+						messagesDoc.insertString(messagesDoc.getLength(), "Me: ", userNameStyle);
+						if (currentMessage.getText().charAt(currentMessage.getText().length() - 1) == '\n')
+							messagesDoc.insertString(messagesDoc.getLength(), currentMessage.getText(), myMessageStyle);
+						else
+							messagesDoc.insertString(messagesDoc.getLength(), currentMessage.getText() + "\n",
+									myMessageStyle);
 					} catch (BadLocationException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -202,6 +228,7 @@ public class ClientGUI extends JFrame {
 
 	}
 
+//	Add all users into the list
 	public void GUIAddUsers(ChatClient[] clients) {
 		for (ChatClient chatClient : clients) {
 			Vector<String> data = new Vector<String>();
@@ -212,6 +239,7 @@ public class ClientGUI extends JFrame {
 		}
 	}
 
+//	Alter the status of an existing user or add a new user to the list
 	public void GUIAddOrModifyUserStatus(ChatClient client) {
 		boolean found = false;
 		for (int i = 0; i < usersTableModel.getRowCount(); i++) {
@@ -230,6 +258,7 @@ public class ClientGUI extends JFrame {
 		updatesLabel.setText(client.getAlias() + " went " + client.getStatus().toString());
 	}
 
+//	Display the received message
 	public void GUIDisplayReceivedMessage(String clientName, String message) {
 		String clientAlias = "";
 		for (int i = 0; i < usersTableModel.getRowCount(); i++) {
@@ -237,11 +266,13 @@ public class ClientGUI extends JFrame {
 				clientAlias = usersTableModel.getValueAt(i, 0).toString();
 			}
 		}
-		
+
 		StyleConstants.setForeground(userNameStyle, receivedMessageColor);
 		try {
 			messagesDoc.insertString(messagesDoc.getLength(), clientAlias + ": ", userNameStyle);
-			messagesDoc.insertString(messagesDoc.getLength(), message + "\n", receivedMessageStyle);
+			if (message.charAt(message.length() - 1) != '\n')
+				message += "\n";
+			messagesDoc.insertString(messagesDoc.getLength(), message, receivedMessageStyle);
 		} catch (BadLocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
