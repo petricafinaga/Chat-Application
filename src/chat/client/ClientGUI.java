@@ -52,6 +52,11 @@ public class ClientGUI extends JFrame {
 	StyledDocument messagesDoc;
 	Style receivedMessageStyle;
 	Style myMessageStyle;
+	Style userNameStyle;
+	
+	Color myMessageColor = Color.black;
+	Color receivedMessageColor = Color.orange;
+	
 
 	String talkingNowClient = null;
 
@@ -157,11 +162,16 @@ public class ClientGUI extends JFrame {
 		messagesTextPane = new JTextPane();
 		messagesTextPane.setBounds(10, 47, 572, 339);
 		messagesTextPane.setEditable(false);
+		
 		messagesDoc = messagesTextPane.getStyledDocument();
+		
 		receivedMessageStyle = messagesTextPane.addStyle("", null);
 		myMessageStyle = messagesTextPane.addStyle("", null);
-		StyleConstants.setForeground(receivedMessageStyle, Color.orange);
-		StyleConstants.setForeground(myMessageStyle, Color.black);
+		userNameStyle = messagesTextPane.addStyle("", null);
+		StyleConstants.setForeground(receivedMessageStyle, receivedMessageColor);
+		StyleConstants.setForeground(myMessageStyle, myMessageColor);
+		StyleConstants.setBold(userNameStyle, true);
+		
 		messagesScrollPane = new JScrollPane(messagesTextPane);
 		messagesScrollPane.setBounds(10, 47, 572, 339);
 		contentPane.add(messagesScrollPane);
@@ -175,9 +185,11 @@ public class ClientGUI extends JFrame {
 					JOptionPane.showMessageDialog(null, "Please select a user from the list!");
 				else {
 					clientAgent.SendMessage(talkingNowClient, msg);
-//					messagesTextPane.setText(messagesTextPane.getText() + "Me: " + currentMessage.getText() + "\n");
+					StyleConstants.setForeground(userNameStyle, myMessageColor);
 					try {
-						messagesDoc.insertString(messagesDoc.getLength(), "Me: " + currentMessage.getText() + "\n",
+						
+						messagesDoc.insertString(messagesDoc.getLength(), "Me: ",userNameStyle);
+						messagesDoc.insertString(messagesDoc.getLength(), currentMessage.getText() + "\n",
 								myMessageStyle);
 					} catch (BadLocationException e) {
 						// TODO Auto-generated catch block
@@ -225,9 +237,11 @@ public class ClientGUI extends JFrame {
 				clientAlias = usersTableModel.getValueAt(i, 0).toString();
 			}
 		}
-		String msgToDisplay = clientAlias + ": " + message + "\n";
+		
+		StyleConstants.setForeground(userNameStyle, receivedMessageColor);
 		try {
-			messagesDoc.insertString(messagesDoc.getLength(), msgToDisplay, receivedMessageStyle);
+			messagesDoc.insertString(messagesDoc.getLength(), clientAlias + ": ", userNameStyle);
+			messagesDoc.insertString(messagesDoc.getLength(), message + "\n", receivedMessageStyle);
 		} catch (BadLocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
