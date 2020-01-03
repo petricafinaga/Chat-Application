@@ -143,7 +143,7 @@ public class ClientGUI extends JFrame {
 		sendButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				clientAgent.SendMessage(talkingNowLabel.getText(), new Message(MessageType.TextMessage, currentMessage.getText()));
+				clientAgent.SendMessage(talkingNowLabel.getText(), new Message(MessageType.TextMessage, "Salut"));
 			}
 		});
 
