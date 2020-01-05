@@ -27,7 +27,7 @@ public final class ClientAgent extends Agent {
 		// Subscribe to Local Server
 		SubscribeToServer();
 
-		clientGui = new ClientGUI();
+		clientGui = new ClientGUI(this);
 		clientGui.setVisible(true);
 
 		final ClientReceiverBehaviour receiverBehaviour = new ClientReceiverBehaviour(this);
@@ -43,14 +43,17 @@ public final class ClientAgent extends Agent {
 
 	public void OnAllClients(ChatClient[] clients) {
 		// TO DO
+		clientGui.GUIAddUsers(clients);
 	}
 
 	public void OnClientUpdate(ChatClient client) {
 		// TO DO
+		clientGui.GUIAddOrModifyUserStatus(client);
 	}
 
 	public void OnTextMessage(String clientName, String messageText) {
 		// TO DO
+		clientGui.GUIDisplayReceivedMessage(clientName, messageText);
 	}
 
 	public void SendMessage(String clientName, Message msg) {
@@ -70,7 +73,7 @@ public final class ClientAgent extends Agent {
 		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 
 		message.addReceiver(serverAid);
-		message.setContent(new Message(MessageType.Subscribe, "Petrica").toString());
+		message.setContent(new Message(MessageType.Subscribe, "user-"+Math.random()).toString());
 
 		this.send(message);
 	}
