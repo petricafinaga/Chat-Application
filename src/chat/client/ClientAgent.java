@@ -1,5 +1,9 @@
 package chat.client;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import common.Message;
 import common.Message.MessageType;
 import jade.core.AID;
@@ -16,6 +20,31 @@ public final class ClientAgent extends Agent {
 	public ClientAgent() {
 		serverAid = new AID();
 		serverAid.setLocalName(fServerName);
+
+		File file = new File("config.txt");
+
+		// Create the file
+		try {
+			if (file.createNewFile()) {
+				System.out.println("File is created!");
+			} else {
+				System.out.println("File already exists.");
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Write Content
+		FileWriter writer;
+		try {
+			writer = new FileWriter(file);
+			writer.write("Test data");
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -51,6 +80,10 @@ public final class ClientAgent extends Agent {
 
 	public void OnTextMessage(String clientName, String messageText) {
 		clientGui.GUIDisplayReceivedMessage(clientName, messageText);
+	}
+
+	public void UpdateAlias(String alias) {
+
 	}
 
 	public void SendMessage(String clientName, Message msg) {
