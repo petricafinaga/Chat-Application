@@ -1,6 +1,8 @@
 package chat.client;
 
 public class ClientConfig {
+	private static final String defaultAlias = "";
+	private static final String defaultServerAddress = "127.0.0.1";
 
 	private String alias;
 	private String serverAddress;
@@ -24,5 +26,9 @@ public class ClientConfig {
 
 	public String GetServerAddress() {
 		return this.serverAddress;
+	}
+
+	public static ClientConfig GetDefaultClientConfig() {
+		return new ClientConfig(defaultAlias, defaultServerAddress);
 	}
 }

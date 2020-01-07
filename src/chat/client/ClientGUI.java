@@ -1,20 +1,8 @@
 package chat.client;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.JTextPane;
-import javax.swing.JButton;
-
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -23,7 +11,18 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Vector;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
@@ -32,9 +31,6 @@ import javax.swing.text.StyledDocument;
 
 import common.Message;
 import common.Message.MessageType;
-
-import java.awt.Color;
-import java.awt.Dimension;
 
 @SuppressWarnings("serial")
 public class ClientGUI extends JFrame {
@@ -83,7 +79,7 @@ public class ClientGUI extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public ClientGUI(ClientAgent a) {
+	public ClientGUI(ClientAgent a, String alias) {
 
 		super(a.getLocalName());
 		clientAgent = a;
@@ -96,6 +92,7 @@ public class ClientGUI extends JFrame {
 
 //		Capture GUI close event
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent e) {
 //				TODE delete agent
 				clientAgent.doDelete();
@@ -151,6 +148,7 @@ public class ClientGUI extends JFrame {
 		usersTableModel.setColumnIdentifiers(header);
 		usersTable = new JTable(usersTableModel) {
 //			Disables the cell editing feature in the users table
+			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}

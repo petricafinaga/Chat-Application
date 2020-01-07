@@ -1,11 +1,8 @@
 package chat.client;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import common.Message;
 import common.Message.MessageType;
+import common.Utils;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
@@ -16,35 +13,13 @@ public final class ClientAgent extends Agent {
 
 	private AID serverAid;
 	private ClientGUI clientGui;
+	private ClientConfig clientConfig;
 
 	public ClientAgent() {
 		serverAid = new AID();
 		serverAid.setLocalName(fServerName);
 
-		File file = new File("config.txt");
-
-		// Create the file
-		try {
-			if (file.createNewFile()) {
-				System.out.println("File is created!");
-			} else {
-				System.out.println("File already exists.");
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// Write Content
-		FileWriter writer;
-		try {
-			writer = new FileWriter(file);
-			writer.write("Test data");
-			writer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		clientConfig = Utils.ReadClientConfigFromFile();
 	}
 
 	/**
@@ -56,7 +31,14 @@ public final class ClientAgent extends Agent {
 		// Subscribe to Local Server
 		SubscribeToServer();
 
-		clientGui = new ClientGUI(this);
+		String alias = "";
+		if (clientConfig != null) {
+			alias = clientConfig.GetAlias();
+		} else {
+			Utils.WriteClientConfigToFile(ClientConfig.GetDefaultClientConfig());
+		}
+
+		clientGui = new ClientGUI(this, alias);
 		clientGui.setVisible(true);
 
 		final ClientReceiverBehaviour receiverBehaviour = new ClientReceiverBehaviour(this);
@@ -83,7 +65,7 @@ public final class ClientAgent extends Agent {
 	}
 
 	public void UpdateAlias(String alias) {
-
+//		Utils.WriteClientConfigToFile(config)
 	}
 
 	public void SendMessage(String clientName, Message msg) {
