@@ -78,7 +78,6 @@ public final class ClientAgent extends Agent {
 		Utils.WriteClientConfigToFile(clientConfig);
 
 		SubscribeToServer();
->>>>>>> 6a81e4e847d87b4943b056b33df288b3218251f7
 	}
 
 	public void SendMessage(String clientName, Message msg) {

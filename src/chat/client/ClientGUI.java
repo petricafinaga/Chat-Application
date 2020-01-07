@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.JTextPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 
 import java.awt.Font;
@@ -26,27 +27,6 @@ import java.util.Vector;
 import javax.swing.JTable;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.Vector;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
@@ -55,9 +35,6 @@ import javax.swing.text.StyledDocument;
 
 import common.Message;
 import common.Message.MessageType;
-
-import java.awt.Color;
-import java.awt.Dimension;
 
 @SuppressWarnings("serial")
 public class ClientGUI extends JFrame {
@@ -88,35 +65,19 @@ public class ClientGUI extends JFrame {
 	DefaultTableModel usersTableModel;
 
 	/**
-	 * Launch the application.
-	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					ClientGUI frame = new ClientGUI();
-//					frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
-
-	/**
 	 * Create the frame.
 	 */
-
 
 	public ClientGUI(ClientAgent a, String alias) {
 		super(a.getLocalName());
 		clientAgent = a;
 
 		if (alias == null) {
-			// TO DO: Show popup to insert alias
-			// a.UpdateAlias(alias);
+			String result = JOptionPane.showInputDialog(contentPane, "Enter your username");
+			a.UpdateAlias(result);
 		}
 
+		this.setTitle(alias);
 		setBounds(100, 100, 851, 486);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -127,7 +88,6 @@ public class ClientGUI extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-//				TODE delete agent
 				clientAgent.doDelete();
 			}
 		});
@@ -140,20 +100,17 @@ public class ClientGUI extends JFrame {
 		currentMessage.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
 				if (e.getKeyCode() == KeyEvent.VK_ENTER)
 					sendButton.doClick();
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 		});
@@ -192,11 +149,11 @@ public class ClientGUI extends JFrame {
 		usersTable.setSize(new Dimension(230, 403));
 		usersTable.setTableHeader(null);
 		usersTable.setDefaultEditor(Object.class, null);
+		usersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		usersTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				// TODO Auto-generated method stub
 				talkingNowClient = usersTableModel.getValueAt(usersTable.getSelectedRow(), 2).toString();
 				talkingNowLabel.setText(usersTableModel.getValueAt(usersTable.getSelectedRow(), 0).toString());
 
@@ -219,7 +176,6 @@ public class ClientGUI extends JFrame {
 		messagesTextPane = new JTextPane();
 		messagesTextPane.setBounds(10, 47, 572, 339);
 		messagesTextPane.setEditable(false);
-
 
 //		Label to display latest updates
 		updatesLabel = new JLabel("No new updates");
@@ -262,7 +218,6 @@ public class ClientGUI extends JFrame {
 							messagesDoc.insertString(messagesDoc.getLength(), currentMessage.getText() + "\n",
 									myMessageStyle);
 					} catch (BadLocationException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -318,7 +273,6 @@ public class ClientGUI extends JFrame {
 				message += "\n";
 			messagesDoc.insertString(messagesDoc.getLength(), message, receivedMessageStyle);
 		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
