@@ -54,6 +54,8 @@ public class Utils {
 			while ((line = reader.readLine()) != null) {
 				json += line;
 			}
+
+			reader.close();
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}

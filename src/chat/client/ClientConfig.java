@@ -1,8 +1,10 @@
 package chat.client;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class ClientConfig {
-	private static final String defaultAlias = "";
-	private static final String defaultServerAddress = "127.0.0.1";
+	private static final String defaultAlias = null;
 
 	private String alias;
 	private String serverAddress;
@@ -29,6 +31,14 @@ public class ClientConfig {
 	}
 
 	public static ClientConfig GetDefaultClientConfig() {
-		return new ClientConfig(defaultAlias, defaultServerAddress);
+
+		String localAddress = "";
+		try {
+			localAddress = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+
+		return new ClientConfig(defaultAlias, localAddress);
 	}
 }

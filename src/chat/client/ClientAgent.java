@@ -17,9 +17,6 @@ public final class ClientAgent extends Agent {
 
 	public ClientAgent() {
 		serverAid = new AID();
-		serverAid.setLocalName(fServerName);
-
-		clientConfig = Utils.ReadClientConfigFromFile();
 	}
 
 	/**
@@ -28,18 +25,23 @@ public final class ClientAgent extends Agent {
 	@Override
 	protected void setup() {
 
-		// Subscribe to Local Server
-		SubscribeToServer();
+		clientConfig = Utils.ReadClientConfigFromFile();
 
-		String alias = "";
-		if (clientConfig != null) {
-			alias = clientConfig.GetAlias();
-		} else {
-			Utils.WriteClientConfigToFile(ClientConfig.GetDefaultClientConfig());
+		if (clientConfig == null) {
+			clientConfig = ClientConfig.GetDefaultClientConfig();
+			Utils.WriteClientConfigToFile(clientConfig);
 		}
+
+		serverAid.setName(fServerName + "@" + clientConfig.GetServerAddress() + ":1099" + "/JADE");
+
+		String alias = clientConfig.GetAlias();
 
 		clientGui = new ClientGUI(this, alias);
 		clientGui.setVisible(true);
+
+		// Subscribe to Local Server
+		if (alias != null)
+			SubscribeToServer();
 
 		final ClientReceiverBehaviour receiverBehaviour = new ClientReceiverBehaviour(this);
 		this.addBehaviour(receiverBehaviour);
@@ -65,7 +67,10 @@ public final class ClientAgent extends Agent {
 	}
 
 	public void UpdateAlias(String alias) {
-//		Utils.WriteClientConfigToFile(config)
+		clientConfig.SetAlias(alias);
+		Utils.WriteClientConfigToFile(clientConfig);
+
+		SubscribeToServer();
 	}
 
 	public void SendMessage(String clientName, Message msg) {
@@ -88,7 +93,7 @@ public final class ClientAgent extends Agent {
 		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 
 		message.addReceiver(serverAid);
-		message.setContent(new Message(MessageType.Subscribe, "user-" + Math.random()).toString());
+		message.setContent(new Message(MessageType.Subscribe, clientConfig.GetAlias()).toString());
 
 		this.send(message);
 	}

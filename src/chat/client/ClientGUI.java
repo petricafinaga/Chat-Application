@@ -80,9 +80,13 @@ public class ClientGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public ClientGUI(ClientAgent a, String alias) {
-
 		super(a.getLocalName());
 		clientAgent = a;
+
+		if (alias == null) {
+			// TO DO: Show popup to insert alias
+			// a.UpdateAlias(alias);
+		}
 
 		setBounds(100, 100, 851, 486);
 		contentPane = new JPanel();
