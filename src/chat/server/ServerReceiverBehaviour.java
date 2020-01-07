@@ -24,6 +24,8 @@ public final class ServerReceiverBehaviour extends CyclicBehaviour {
 
 		if (null != message) {
 			final Message content = Utils.ToObject(message.getContent(), Message.class);
+			if (content == null)
+				return;
 
 			switch (content.getMessageType()) {
 

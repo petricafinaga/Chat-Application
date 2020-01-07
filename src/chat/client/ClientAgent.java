@@ -2,6 +2,7 @@ package chat.client;
 
 import common.Message;
 import common.Message.MessageType;
+import common.Utils;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
@@ -12,10 +13,10 @@ public final class ClientAgent extends Agent {
 
 	private AID serverAid;
 	private ClientGUI clientGui;
+	private ClientConfig clientConfig;
 
 	public ClientAgent() {
 		serverAid = new AID();
-		serverAid.setLocalName(fServerName);
 	}
 
 	/**
@@ -24,11 +25,24 @@ public final class ClientAgent extends Agent {
 	@Override
 	protected void setup() {
 
-		// Subscribe to Local Server
-		SubscribeToServer();
+		clientConfig = Utils.ReadClientConfigFromFile();
 
-		clientGui = new ClientGUI(this);
+		if (clientConfig == null) {
+			clientConfig = ClientConfig.GetDefaultClientConfig();
+			Utils.WriteClientConfigToFile(clientConfig);
+		}
+
+
+		serverAid.setName(fServerName + "@" + clientConfig.GetServerAddress() + ":1099" + "/JADE");
+
+		String alias = clientConfig.GetAlias();
+
+		clientGui = new ClientGUI(this, alias);
 		clientGui.setVisible(true);
+
+		// Subscribe to Local Server
+		if (alias != null)
+			SubscribeToServer();
 
 		final ClientReceiverBehaviour receiverBehaviour = new ClientReceiverBehaviour(this);
 		this.addBehaviour(receiverBehaviour);
@@ -43,20 +57,34 @@ public final class ClientAgent extends Agent {
 
 	public void OnAllClients(ChatClient[] clients) {
 		// TO DO
+
 		clientGui.GUIAddUsers(clients);
 	}
 
 	public void OnClientUpdate(ChatClient client) {
 		// TO DO
+
 		clientGui.GUIAddOrModifyUserStatus(client);
 	}
 
 	public void OnTextMessage(String clientName, String messageText) {
 		// TO DO
+
 		clientGui.GUIDisplayReceivedMessage(clientName, messageText);
 	}
 
+	public void UpdateAlias(String alias) {
+		clientConfig.SetAlias(alias);
+		Utils.WriteClientConfigToFile(clientConfig);
+
+		SubscribeToServer();
+>>>>>>> 6a81e4e847d87b4943b056b33df288b3218251f7
+	}
+
 	public void SendMessage(String clientName, Message msg) {
+
+		if (msg == null)
+			return;
 
 		final AID aid = new AID();
 		aid.setName(clientName);
@@ -73,7 +101,8 @@ public final class ClientAgent extends Agent {
 		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 
 		message.addReceiver(serverAid);
-		message.setContent(new Message(MessageType.Subscribe, "user-"+Math.random()).toString());
+
+		message.setContent(new Message(MessageType.Subscribe, clientConfig.GetAlias()).toString());
 
 		this.send(message);
 	}

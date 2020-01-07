@@ -32,6 +32,9 @@ public final class ServerAgent extends Agent {
 
 	protected void OnClientSubscribe(AID aid, ChatClient client) {
 
+		if (aid == null || client == null)
+			return;
+
 		SendAllAgentsToClient(aid);
 		NotifyAllOnlineAgents(client);
 
@@ -42,9 +45,11 @@ public final class ServerAgent extends Agent {
 	protected void OnClientUnsubscribe(String name) {
 
 		final ChatClient client = chatClientsMap.get(name);
-		client.SetStatus(ClientStatus.Offline);
 
-		NotifyAllOnlineAgents(client);
+		if (client != null) {
+			client.SetStatus(ClientStatus.Offline);
+			NotifyAllOnlineAgents(client);
+		}
 	}
 
 	private void SendAllAgentsToClient(AID aid) {

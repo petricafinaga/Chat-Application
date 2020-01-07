@@ -24,6 +24,29 @@ import java.awt.event.WindowEvent;
 import java.util.Vector;
 
 import javax.swing.JTable;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
@@ -83,10 +106,16 @@ public class ClientGUI extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public ClientGUI(ClientAgent a) {
 
+
+	public ClientGUI(ClientAgent a, String alias) {
 		super(a.getLocalName());
 		clientAgent = a;
+
+		if (alias == null) {
+			// TO DO: Show popup to insert alias
+			// a.UpdateAlias(alias);
+		}
 
 		setBounds(100, 100, 851, 486);
 		contentPane = new JPanel();
@@ -96,6 +125,7 @@ public class ClientGUI extends JFrame {
 
 //		Capture GUI close event
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent e) {
 //				TODE delete agent
 				clientAgent.doDelete();
@@ -108,7 +138,6 @@ public class ClientGUI extends JFrame {
 		currentMessageScrollPane = new JScrollPane(currentMessage);
 		currentMessageScrollPane.setBounds(10, 397, 474, 39);
 		currentMessage.addKeyListener(new KeyListener() {
-
 			@Override
 			public void keyTyped(KeyEvent e) {
 				// TODO Auto-generated method stub
@@ -128,6 +157,9 @@ public class ClientGUI extends JFrame {
 
 			}
 		});
+		currentMessage.getDocument().putProperty("filterNewlines", Boolean.TRUE);
+		contentPane.add(currentMessageScrollPane);
+
 		currentMessage.getDocument().putProperty("filterNewlines", Boolean.TRUE);
 		contentPane.add(currentMessageScrollPane);
 
@@ -151,6 +183,7 @@ public class ClientGUI extends JFrame {
 		usersTableModel.setColumnIdentifiers(header);
 		usersTable = new JTable(usersTableModel) {
 //			Disables the cell editing feature in the users table
+			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
@@ -176,6 +209,17 @@ public class ClientGUI extends JFrame {
 		usersScrollPane = new JScrollPane(usersTable);
 		usersScrollPane.setBounds(592, 11, 230, 403);
 		contentPane.add(usersScrollPane);
+
+//		Label to display latest updates
+		updatesLabel = new JLabel("No new updates");
+		updatesLabel.setBounds(592, 422, 230, 14);
+		contentPane.add(updatesLabel);
+
+//		Text Pane to show all messages in current conversation
+		messagesTextPane = new JTextPane();
+		messagesTextPane.setBounds(10, 47, 572, 339);
+		messagesTextPane.setEditable(false);
+
 
 //		Label to display latest updates
 		updatesLabel = new JLabel("No new updates");
