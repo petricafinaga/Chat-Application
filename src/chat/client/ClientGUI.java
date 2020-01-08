@@ -7,22 +7,9 @@
 
 package chat.client;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.JTextPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.JButton;
-
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -33,14 +20,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import java.awt.Color;
-import java.awt.Dimension;
+import javax.swing.JTextPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+
 import common.Message;
 import common.Message.MessageType;
 
@@ -48,32 +46,27 @@ import common.Message.MessageType;
 public class ClientGUI extends JFrame {
 
 	private JPanel contentPane;
-	ChatClient chatClient;
-	ClientAgent clientAgent;
-
-	JTextPane currentMessage;
-	JButton sendButton;
-	JLabel talkingNowLabel;
-	JTable usersTable;
-	JScrollPane messagesScrollPane;
-	JScrollPane usersScrollPane;
-	JScrollPane currentMessageScrollPane;
-	JLabel updatesLabel;
-	JTextPane messagesTextPane;
-	Style receivedMessageStyle;
-	Style myMessageStyle;
-	Style userNameStyle;
-
-	Color myMessageColor = Color.black;
-	Color receivedMessageColor = Color.orange;
-
-	String talkingNowClient = null;
-
-	DefaultTableModel usersTableModel;
-
-	Map<String, DefaultStyledDocument> usersMessages;
-
-	String clientAlias;
+	private ClientAgent clientAgent;
+	private JTextPane currentMessage;
+	private JButton sendButton;
+	private JLabel talkingNowLabel;
+	private JLabel myUserNameLabel;
+	private JLabel updatesLabel;
+	private JTable usersTable;
+	private JScrollPane messagesScrollPane;
+	private JScrollPane usersScrollPane;
+	private JScrollPane currentMessageScrollPane;
+	private JTextPane messagesTextPane;
+	private Style receivedMessageStyle;
+	private Style myMessageStyle;
+	private Style userNameStyle;
+	private Color myMessageColor = Color.black;
+	private Color receivedMessageColor = Color.orange;
+	private String talkingNowClientName = null;
+	private String talkingNowClientAlias = null;
+	private String clientAlias;
+	private DefaultTableModel usersTableModel;
+	private Map<String, DefaultStyledDocument> usersMessages;
 
 	/**
 	 * Create the frame.
@@ -81,7 +74,6 @@ public class ClientGUI extends JFrame {
 
 	public ClientGUI(ClientAgent a, String alias) {
 		super(a.getLocalName());
-		setResizable(false);
 		clientAgent = a;
 
 		if (alias == null) {
@@ -90,9 +82,8 @@ public class ClientGUI extends JFrame {
 		} else {
 			clientAlias = alias;
 		}
-
 		usersMessages = new HashMap<String, DefaultStyledDocument>();
-
+		setResizable(false);
 		this.setTitle(clientAlias);
 		setBounds(100, 100, 851, 486);
 		contentPane = new JPanel();
@@ -116,23 +107,23 @@ public class ClientGUI extends JFrame {
 		currentMessage.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {
-
 			}
-
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER)
 					sendButton.doClick();
 			}
-
 			@Override
 			public void keyPressed(KeyEvent e) {
-
 			}
 		});
 		currentMessage.getDocument().putProperty("filterNewlines", Boolean.TRUE);
+		
+		myUserNameLabel = new JLabel(clientAlias);
+		myUserNameLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		myUserNameLabel.setBounds(10, 11, 236, 25);
+		contentPane.add(myUserNameLabel);
 		contentPane.add(currentMessageScrollPane);
-
 		currentMessage.getDocument().putProperty("filterNewlines", Boolean.TRUE);
 		contentPane.add(currentMessageScrollPane);
 
@@ -144,10 +135,10 @@ public class ClientGUI extends JFrame {
 		contentPane.add(sendButton);
 
 //		Label to display who am I talking with
-		talkingNowLabel = new JLabel("User ID");
+		talkingNowLabel = new JLabel();
 		talkingNowLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		talkingNowLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		talkingNowLabel.setBounds(10, 11, 572, 25);
+		talkingNowLabel.setBounds(256, 11, 326, 25);
 		contentPane.add(talkingNowLabel);
 
 //		Table to show users and their status
@@ -170,12 +161,12 @@ public class ClientGUI extends JFrame {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				talkingNowClient = usersTableModel.getValueAt(usersTable.getSelectedRow(), 2).toString();
-				talkingNowLabel.setText(usersTableModel.getValueAt(usersTable.getSelectedRow(), 0).toString());
-				messagesTextPane.setStyledDocument(usersMessages.get(talkingNowLabel.getText()));
+				talkingNowClientName = usersTableModel.getValueAt(usersTable.getSelectedRow(), 2).toString();
+				talkingNowClientAlias = usersTableModel.getValueAt(usersTable.getSelectedRow(), 0).toString();
+				talkingNowLabel.setText("Chatting with "+talkingNowClientAlias);
+				messagesTextPane.setStyledDocument(usersMessages.get(talkingNowClientAlias));
 			}
 		});
-
 		usersTable.getColumnModel().getColumn(2).setMinWidth(0);
 		usersTable.getColumnModel().getColumn(2).setMaxWidth(0);
 		usersTable.getColumnModel().getColumn(2).setWidth(0);
@@ -209,22 +200,21 @@ public class ClientGUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				Message msg = new Message(MessageType.TextMessage, currentMessage.getText());
-				if (talkingNowClient == null)
+				if (talkingNowClientName == null)
 					JOptionPane.showMessageDialog(null, "Please select a user from the list!");
 				else {
-					clientAgent.SendMessage(talkingNowClient, msg);
+					clientAgent.SendMessage(talkingNowClientName, msg);
 					StyleConstants.setForeground(userNameStyle, myMessageColor);
 					try {
-
-						usersMessages.get(talkingNowLabel.getText()).insertString(
-								usersMessages.get(talkingNowLabel.getText()).getLength(), "Me: ", userNameStyle);
+						usersMessages.get(talkingNowClientAlias).insertString(
+								usersMessages.get(talkingNowClientAlias).getLength(), "Me: ", userNameStyle);
 						if (currentMessage.getText().charAt(currentMessage.getText().length() - 1) == '\n')
-							usersMessages.get(talkingNowLabel.getText()).insertString(
-									usersMessages.get(talkingNowLabel.getText()).getLength(), currentMessage.getText(),
+							usersMessages.get(talkingNowClientAlias).insertString(
+									usersMessages.get(talkingNowClientAlias).getLength(), currentMessage.getText(),
 									myMessageStyle);
 						else
-							usersMessages.get(talkingNowLabel.getText()).insertString(
-									usersMessages.get(talkingNowLabel.getText()).getLength(),
+							usersMessages.get(talkingNowClientAlias).insertString(
+									usersMessages.get(talkingNowClientAlias).getLength(),
 									currentMessage.getText() + "\n", myMessageStyle);
 					} catch (BadLocationException e) {
 						e.printStackTrace();
@@ -245,12 +235,7 @@ public class ClientGUI extends JFrame {
 			data.add(chatClient.getName());
 			usersTableModel.addRow(data);
 //			Add messages into the list
-			try {
-				usersMessages.put(chatClient.getAlias(), new DefaultStyledDocument());
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}
+			usersMessages.put(chatClient.getAlias(), new DefaultStyledDocument());
 		}
 	}
 
@@ -269,14 +254,9 @@ public class ClientGUI extends JFrame {
 			data.add(client.getStatus().toString());
 			data.add(client.getName());
 			usersTableModel.addRow(data);
-			try {
-				usersMessages.put(client.getAlias(), new DefaultStyledDocument());
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}
+//			Add messages into the list
+			usersMessages.put(client.getAlias(), new DefaultStyledDocument());
 		}
-		updatesLabel.setText("");
 		updatesLabel.setText(client.getAlias() + " went " + client.getStatus().toString());
 	}
 
@@ -289,14 +269,13 @@ public class ClientGUI extends JFrame {
 				usersTable.getSelectionModel().setSelectionInterval(i, i);
 			}
 		}
-
 		StyleConstants.setForeground(userNameStyle, receivedMessageColor);
 		try {
-			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(),
+			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowClientAlias).getLength(),
 					clientAlias + ": ", userNameStyle);
 			if (message.charAt(message.length() - 1) != '\n')
 				message += "\n";
-			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(),
+			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowClientAlias).getLength(),
 					message, receivedMessageStyle);
 		} catch (BadLocationException e) {
 			e.printStackTrace();

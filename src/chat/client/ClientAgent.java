@@ -39,7 +39,6 @@ public final class ClientAgent extends Agent {
 
 		if (clientConfig == null) {
 			clientConfig = ClientConfig.GetDefaultClientConfig();
-			Utils.WriteClientConfigToFile(clientConfig, configFileName);
 		}
 
 
@@ -65,27 +64,20 @@ public final class ClientAgent extends Agent {
 	/* End override methods from inherited class */
 
 	public void OnAllClients(ChatClient[] clients) {
-		// TO DO
-
 		clientGui.GUIAddUsers(clients);
 	}
 
 	public void OnClientUpdate(ChatClient client) {
-		// TO DO
-
 		clientGui.GUIAddOrModifyUserStatus(client);
 	}
 
 	public void OnTextMessage(String clientName, String messageText) {
-		// TO DO
-
 		clientGui.GUIDisplayReceivedMessage(clientName, messageText);
 	}
 
 	public void UpdateAlias(String alias) {
 		clientConfig.SetAlias(alias);
 		Utils.WriteClientConfigToFile(clientConfig, configFileName);
-
 		SubscribeToServer();
 	}
 
@@ -96,32 +88,25 @@ public final class ClientAgent extends Agent {
 
 		final AID aid = new AID();
 		aid.setName(clientName);
-
 		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 		message.addReceiver(aid);
 		message.setContent(msg.toString());
-
 		this.send(message);
 	}
 
 	private void SubscribeToServer() {
 
 		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
-
 		message.addReceiver(serverAid);
-
 		message.setContent(new Message(MessageType.Subscribe, clientConfig.GetAlias()).toString());
-
 		this.send(message);
 	}
 
 	private void UnsubscribeFromServer() {
 
 		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
-
 		message.addReceiver(serverAid);
 		message.setContent(new Message(MessageType.Unsubscribe, null).toString());
-
 		this.send(message);
 	}
 }
