@@ -1,3 +1,10 @@
+/**
+ * @author Acroitoritei Calin
+ *
+ * @version 1.0
+ * @since 05-12-2019
+ **/
+
 package chat.client;
 
 import java.awt.Color;

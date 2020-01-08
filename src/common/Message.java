@@ -1,3 +1,10 @@
+/**
+ * @author Finaga Petrica
+ *
+ * @version 1.0
+ * @since 05-12-2019
+ **/
+
 package common;
 
 import com.google.gson.Gson;
@@ -26,7 +33,7 @@ public class Message {
 
 	@Override
 	public String toString() {
-		Gson gson = new Gson();
+		final Gson gson = new Gson();
 		return gson.toJson(this);
 	}
 }
