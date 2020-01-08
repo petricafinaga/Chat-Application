@@ -94,7 +94,7 @@ public class ClientGUI extends JFrame {
 		}
 
 		usersMessages = new HashMap<String, DefaultStyledDocument>();
-		
+
 		this.setTitle(clientAlias);
 		setBounds(100, 100, 851, 486);
 		contentPane = new JPanel();
@@ -229,13 +229,13 @@ public class ClientGUI extends JFrame {
 					StyleConstants.setForeground(userNameStyle, myMessageColor);
 					try {
 
-						usersMessages.get(talkingNowLabel.getText()).insertString(messagesDoc.getLength(), "Me: ",
+						usersMessages.get(talkingNowLabel.getText()).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(), "Me: ",
 								userNameStyle);
 						if (currentMessage.getText().charAt(currentMessage.getText().length() - 1) == '\n')
-							usersMessages.get(talkingNowLabel.getText()).insertString(messagesDoc.getLength(),
+							usersMessages.get(talkingNowLabel.getText()).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(),
 									currentMessage.getText(), myMessageStyle);
 						else
-							usersMessages.get(talkingNowLabel.getText()).insertString(messagesDoc.getLength(),
+							usersMessages.get(talkingNowLabel.getText()).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(),
 									currentMessage.getText() + "\n", myMessageStyle);
 					} catch (BadLocationException e) {
 						e.printStackTrace();
@@ -306,10 +306,10 @@ public class ClientGUI extends JFrame {
 
 		StyleConstants.setForeground(userNameStyle, receivedMessageColor);
 		try {
-			usersMessages.get(clientAlias).insertString(messagesDoc.getLength(), clientAlias + ": ", userNameStyle);
+			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(), clientAlias + ": ", userNameStyle);
 			if (message.charAt(message.length() - 1) != '\n')
 				message += "\n";
-			usersMessages.get(clientAlias).insertString(messagesDoc.getLength(), message, receivedMessageStyle);
+			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(), message, receivedMessageStyle);
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
