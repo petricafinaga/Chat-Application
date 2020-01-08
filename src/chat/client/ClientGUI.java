@@ -10,6 +10,7 @@ package chat.client;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Scrollbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -25,6 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
@@ -67,6 +69,7 @@ public class ClientGUI extends JFrame {
 	private String clientAlias;
 	private DefaultTableModel usersTableModel;
 	private Map<String, DefaultStyledDocument> usersMessages;
+	private JScrollBar messagesScrollBar;
 
 	/**
 	 * Create the frame.
@@ -192,6 +195,7 @@ public class ClientGUI extends JFrame {
 		StyleConstants.setForeground(myMessageStyle, myMessageColor);
 		StyleConstants.setBold(userNameStyle, true);
 		messagesScrollPane = new JScrollPane(messagesTextPane);
+		messagesScrollBar = messagesScrollPane.getVerticalScrollBar();
 		messagesScrollPane.setBounds(10, 47, 572, 339);
 		contentPane.add(messagesScrollPane);
 
@@ -221,6 +225,7 @@ public class ClientGUI extends JFrame {
 					}
 				}
 				currentMessage.setText("");
+				messagesScrollBar.setValue(messagesScrollBar.getMaximum());
 			}
 		});
 
@@ -280,5 +285,6 @@ public class ClientGUI extends JFrame {
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
+		messagesScrollBar.setValue(messagesScrollBar.getMaximum());
 	}
 }
