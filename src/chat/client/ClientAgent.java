@@ -1,3 +1,10 @@
+/**
+ * @author Finaga Petrica
+ *
+ * @version 1.0
+ * @since 05-12-2019
+ **/
+
 package chat.client;
 
 import common.Message;
@@ -9,11 +16,13 @@ import jade.lang.acl.ACLMessage;
 
 @SuppressWarnings("serial")
 public final class ClientAgent extends Agent {
-	private final String fServerName = "ChatServer";
+	private static final String configExtension = ".config";
 
 	private AID serverAid;
 	private ClientGUI clientGui;
 	private ClientConfig clientConfig;
+
+	private String configFileName;
 
 	public ClientAgent() {
 		serverAid = new AID();
@@ -25,22 +34,22 @@ public final class ClientAgent extends Agent {
 	@Override
 	protected void setup() {
 
-		clientConfig = Utils.ReadClientConfigFromFile();
+		configFileName = this.getLocalName() + configExtension;
+		clientConfig = Utils.ReadClientConfigFromFile(configFileName);
 
 		if (clientConfig == null) {
 			clientConfig = ClientConfig.GetDefaultClientConfig();
-			Utils.WriteClientConfigToFile(clientConfig);
+			Utils.WriteClientConfigToFile(clientConfig, configFileName);
 		}
 
 
-		serverAid.setName(fServerName + "@" + clientConfig.GetServerAddress() + ":1099" + "/JADE");
-
+		serverAid.setLocalName(clientConfig.GetServerName());
 		String alias = clientConfig.GetAlias();
 
 		clientGui = new ClientGUI(this, alias);
 		clientGui.setVisible(true);
 
-		// Subscribe to Local Server
+		// Subscribe to Chat Server
 		if (alias != null)
 			SubscribeToServer();
 
@@ -75,7 +84,7 @@ public final class ClientAgent extends Agent {
 
 	public void UpdateAlias(String alias) {
 		clientConfig.SetAlias(alias);
-		Utils.WriteClientConfigToFile(clientConfig);
+		Utils.WriteClientConfigToFile(clientConfig, configFileName);
 
 		SubscribeToServer();
 	}

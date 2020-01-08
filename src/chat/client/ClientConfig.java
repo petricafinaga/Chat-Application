@@ -1,44 +1,41 @@
+/**
+ * @author Finaga Petrica
+ *
+ * @version 1.0
+ * @since 05-12-2019
+ **/
+
 package chat.client;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 public class ClientConfig {
-	private static final String defaultAlias = null;
+	private static final String fDefaultAlias = null;
+	private static final String fDefaultServerName = "ChatServer";
 
 	private String alias;
-	private String serverAddress;
+	private String serverName;
 
-	public ClientConfig(String alias, String serverAddress) {
+	public ClientConfig(String alias, String serverName) {
 		this.alias = alias;
-		this.serverAddress = serverAddress;
+		this.serverName = serverName;
 	}
 
 	public void SetAlias(String alias) {
 		this.alias = alias;
 	}
 
-	public void SetServerAddress(String serverAddress) {
-		this.serverAddress = serverAddress;
+	public void SetServerName(String serverName) {
+		this.serverName = serverName;
 	}
 
 	public String GetAlias() {
 		return this.alias;
 	}
 
-	public String GetServerAddress() {
-		return this.serverAddress;
+	public String GetServerName() {
+		return this.serverName;
 	}
 
 	public static ClientConfig GetDefaultClientConfig() {
-
-		String localAddress = "";
-		try {
-			localAddress = InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-
-		return new ClientConfig(defaultAlias, localAddress);
+		return new ClientConfig(fDefaultAlias, fDefaultServerName);
 	}
 }
