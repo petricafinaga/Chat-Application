@@ -41,8 +41,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
-
 import common.Message;
 import common.Message.MessageType;
 
@@ -62,7 +60,6 @@ public class ClientGUI extends JFrame {
 	JScrollPane currentMessageScrollPane;
 	JLabel updatesLabel;
 	JTextPane messagesTextPane;
-	StyledDocument messagesDoc;
 	Style receivedMessageStyle;
 	Style myMessageStyle;
 	Style userNameStyle;
@@ -84,6 +81,7 @@ public class ClientGUI extends JFrame {
 
 	public ClientGUI(ClientAgent a, String alias) {
 		super(a.getLocalName());
+		setResizable(false);
 		clientAgent = a;
 
 		if (alias == null) {
@@ -195,17 +193,6 @@ public class ClientGUI extends JFrame {
 		messagesTextPane.setBounds(10, 47, 572, 339);
 		messagesTextPane.setEditable(false);
 
-//		Label to display latest updates
-		updatesLabel = new JLabel("No new updates");
-		updatesLabel.setBounds(592, 422, 230, 14);
-		contentPane.add(updatesLabel);
-
-//		Text Pane to show all messages in current conversation
-		messagesTextPane = new JTextPane();
-		messagesTextPane.setBounds(10, 47, 572, 339);
-		messagesTextPane.setEditable(false);
-
-		messagesDoc = messagesTextPane.getStyledDocument();
 //		Styles to show different messages
 		receivedMessageStyle = messagesTextPane.addStyle("", null);
 		myMessageStyle = messagesTextPane.addStyle("", null);
@@ -229,13 +216,15 @@ public class ClientGUI extends JFrame {
 					StyleConstants.setForeground(userNameStyle, myMessageColor);
 					try {
 
-						usersMessages.get(talkingNowLabel.getText()).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(), "Me: ",
-								userNameStyle);
+						usersMessages.get(talkingNowLabel.getText()).insertString(
+								usersMessages.get(talkingNowLabel.getText()).getLength(), "Me: ", userNameStyle);
 						if (currentMessage.getText().charAt(currentMessage.getText().length() - 1) == '\n')
-							usersMessages.get(talkingNowLabel.getText()).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(),
-									currentMessage.getText(), myMessageStyle);
+							usersMessages.get(talkingNowLabel.getText()).insertString(
+									usersMessages.get(talkingNowLabel.getText()).getLength(), currentMessage.getText(),
+									myMessageStyle);
 						else
-							usersMessages.get(talkingNowLabel.getText()).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(),
+							usersMessages.get(talkingNowLabel.getText()).insertString(
+									usersMessages.get(talkingNowLabel.getText()).getLength(),
 									currentMessage.getText() + "\n", myMessageStyle);
 					} catch (BadLocationException e) {
 						e.printStackTrace();
@@ -262,9 +251,6 @@ public class ClientGUI extends JFrame {
 				// TODO: handle exception
 				e.printStackTrace();
 			}
-//			Set the content of the textpane to display the conversation with the current user
-//			TODO do this when clicking on the user in the right list
-//			messagesTextPane.setStyledDocument(usersMessages.get(chatClient.getAlias()));
 		}
 	}
 
@@ -284,13 +270,13 @@ public class ClientGUI extends JFrame {
 			data.add(client.getName());
 			usersTableModel.addRow(data);
 			try {
-				DefaultStyledDocument messages = new DefaultStyledDocument();
-				usersMessages.put(client.getAlias(), messages);
+				usersMessages.put(client.getAlias(), new DefaultStyledDocument());
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
 			}
 		}
+		updatesLabel.setText("");
 		updatesLabel.setText(client.getAlias() + " went " + client.getStatus().toString());
 	}
 
@@ -306,10 +292,12 @@ public class ClientGUI extends JFrame {
 
 		StyleConstants.setForeground(userNameStyle, receivedMessageColor);
 		try {
-			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(), clientAlias + ": ", userNameStyle);
+			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(),
+					clientAlias + ": ", userNameStyle);
 			if (message.charAt(message.length() - 1) != '\n')
 				message += "\n";
-			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(), message, receivedMessageStyle);
+			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowLabel.getText()).getLength(),
+					message, receivedMessageStyle);
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
