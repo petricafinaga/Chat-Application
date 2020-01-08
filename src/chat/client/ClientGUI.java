@@ -22,6 +22,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.JTable;
@@ -29,6 +30,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -63,6 +65,8 @@ public class ClientGUI extends JFrame {
 	String talkingNowClient = null;
 
 	DefaultTableModel usersTableModel;
+	
+	Map<String, StyledDocument> usersMessages;
 
 	/**
 	 * Create the frame.
@@ -235,6 +239,11 @@ public class ClientGUI extends JFrame {
 			data.add(chatClient.getStatus().toString());
 			data.add(chatClient.getName());
 			usersTableModel.addRow(data);
+//			Add messages into the list
+			usersMessages.put(chatClient.getAlias(), new DefaultStyledDocument());
+//			Set the content of the textpane to display the conversation with the current user
+//			TODO do this when clicking on the user in the right list
+			messagesTextPane.setStyledDocument(usersMessages.get(chatClient.getAlias()));
 		}
 	}
 
