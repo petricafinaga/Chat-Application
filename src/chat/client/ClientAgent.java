@@ -42,7 +42,6 @@ public final class ClientAgent extends Agent {
 			Utils.WriteClientConfigToFile(clientConfig, configFileName);
 		}
 
-
 		serverAid.setLocalName(clientConfig.GetServerName());
 		String alias = clientConfig.GetAlias();
 
@@ -89,25 +88,31 @@ public final class ClientAgent extends Agent {
 
 		final AID aid = new AID();
 		aid.setName(clientName);
+		
 		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 		message.addReceiver(aid);
 		message.setContent(msg.toString());
+		
 		this.send(message);
 	}
 
 	private void SubscribeToServer() {
 
 		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+		
 		message.addReceiver(serverAid);
 		message.setContent(new Message(MessageType.Subscribe, clientConfig.GetAlias()).toString());
+		
 		this.send(message);
 	}
 
 	private void UnsubscribeFromServer() {
 
 		final ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+		
 		message.addReceiver(serverAid);
 		message.setContent(new Message(MessageType.Unsubscribe, null).toString());
+		
 		this.send(message);
 	}
 }
