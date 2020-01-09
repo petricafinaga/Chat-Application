@@ -78,6 +78,7 @@ public final class ClientAgent extends Agent {
 	public void UpdateAlias(String alias) {
 		clientConfig.SetAlias(alias);
 		Utils.WriteClientConfigToFile(clientConfig, configFileName);
+
 		SubscribeToServer();
 	}
 
