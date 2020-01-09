@@ -39,6 +39,7 @@ public final class ClientAgent extends Agent {
 
 		if (clientConfig == null) {
 			clientConfig = ClientConfig.GetDefaultClientConfig();
+			Utils.WriteClientConfigToFile(clientConfig, configFileName);
 		}
 
 
