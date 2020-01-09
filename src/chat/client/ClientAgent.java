@@ -7,6 +7,7 @@
 
 package chat.client;
 
+import chat.client.gui.ClientGUI;
 import common.Message;
 import common.Message.MessageType;
 import common.Utils;
@@ -64,15 +65,15 @@ public final class ClientAgent extends Agent {
 	/* End override methods from inherited class */
 
 	public void OnAllClients(ChatClient[] clients) {
-		clientGui.GUIAddUsers(clients);
+		clientGui.GUIOnAllClients(clients);
 	}
 
 	public void OnClientUpdate(ChatClient client) {
-		clientGui.GUIAddOrModifyUserStatus(client);
+		clientGui.GUIOnClientUpdate(client);
 	}
 
 	public void OnTextMessage(String clientName, String messageText) {
-		clientGui.GUIDisplayReceivedMessage(clientName, messageText);
+		clientGui.GUIOnTextMessage(clientName, messageText);
 	}
 
 	public void UpdateAlias(String alias) {
