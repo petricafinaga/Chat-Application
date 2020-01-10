@@ -73,13 +73,15 @@ public class ClientGUI extends JFrame {
 	private Color windowColor;
 	private String talkingNowClientName = null;
 	private String talkingNowClientAlias = null;
-	private String myAlias = "defaultUsername";
+	private String myAlias;
+	private Integer fontSize = 14;
 	private DefaultTableModel usersTableModel;
 	private Map<String, DefaultStyledDocument> usersMessages;
 	private JScrollBar messagesScrollBar;
 	private JMenuBar menuBar;
-	private JMenu colorsMenu;
-	private JMenuItem receivedMessageColorMenuItem, sentMessageColorMenuItem, windowColorMenuItem;
+	private JMenu colorsMenu, fontsMenu;
+	private JMenuItem receivedMessageColorMenuItem, sentMessageColorMenuItem, windowColorMenuItem,
+			fontGadugiMenuItem, fontInkFreeMenuItem, fontNirmalaMenuItem, fontRubikMenuItem, fontYuGothicMenuItem;
 
 	/**
 	 * Create the frame.
@@ -124,6 +126,8 @@ public class ClientGUI extends JFrame {
 		this.setJMenuBar(menuBar);
 		// Insert the menu and the according submenus into the menubar
 		colorsMenu = new JMenu("Colors");
+		fontsMenu = new JMenu("Fonts");
+
 		receivedMessageColorMenuItem = new JMenuItem("Received message color");
 		sentMessageColorMenuItem = new JMenuItem("Sent message color");
 		windowColorMenuItem = new JMenuItem("Window color");
@@ -131,6 +135,18 @@ public class ClientGUI extends JFrame {
 		colorsMenu.add(sentMessageColorMenuItem);
 		colorsMenu.add(windowColorMenuItem);
 		menuBar.add(colorsMenu);
+
+		fontGadugiMenuItem = new JMenuItem("Gadugi");
+		fontInkFreeMenuItem = new JMenuItem("Ink Free");
+		fontNirmalaMenuItem = new JMenuItem("Nirmala");
+		fontRubikMenuItem = new JMenuItem("Rubik");
+		fontYuGothicMenuItem = new JMenuItem("Yu Gothic");
+		fontsMenu.add(fontGadugiMenuItem);
+		fontsMenu.add(fontInkFreeMenuItem);
+		fontsMenu.add(fontNirmalaMenuItem);
+		fontsMenu.add(fontRubikMenuItem);
+		fontsMenu.add(fontYuGothicMenuItem);
+		menuBar.add(fontsMenu);
 
 		// Add event listeners on menu items
 		receivedMessageColorMenuItem.addMouseListener(new MouseAdapter() {
@@ -156,6 +172,41 @@ public class ClientGUI extends JFrame {
 				windowColor = JColorChooser.showDialog(null, "Pick a color for window background", windowColor);
 				if (windowColor != null)
 					contentPane.setBackground(windowColor);
+			}
+		});
+		fontGadugiMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				StyleConstants.setFontFamily(myMessageStyle, "Gadugi");
+				StyleConstants.setFontFamily(receivedMessageStyle, "Gadugi");
+			}
+		});
+		fontInkFreeMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				StyleConstants.setFontFamily(myMessageStyle, "Ink Free");
+				StyleConstants.setFontFamily(receivedMessageStyle, "Ink Free");
+			}
+		});
+		fontNirmalaMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				StyleConstants.setFontFamily(myMessageStyle, "Nirmala UI");
+				StyleConstants.setFontFamily(receivedMessageStyle, "Nirmala UI");
+			}
+		});
+		fontRubikMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				StyleConstants.setFontFamily(myMessageStyle, "Rubik");
+				StyleConstants.setFontFamily(receivedMessageStyle, "Rubik");
+			}
+		});
+		fontYuGothicMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				StyleConstants.setFontFamily(myMessageStyle, "Yu Gothic UI Semibold");
+				StyleConstants.setFontFamily(receivedMessageStyle, "Yu Gothic UI Semibold");
 			}
 		});
 
@@ -243,14 +294,16 @@ public class ClientGUI extends JFrame {
 		// Styles to show different messages
 		receivedMessageStyle = messagesTextPane.addStyle("", null);
 		myMessageStyle = messagesTextPane.addStyle("", null);
-		
+
 		StyleConstants.setForeground(receivedMessageStyle, receivedMessageColor);
 		StyleConstants.setAlignment(receivedMessageStyle, StyleConstants.ALIGN_LEFT);
 		StyleConstants.setFontFamily(receivedMessageStyle, "Rubik");
-		
+		StyleConstants.setFontSize(receivedMessageStyle, fontSize);
+
 		StyleConstants.setForeground(myMessageStyle, myMessageColor);
 		StyleConstants.setAlignment(myMessageStyle, StyleConstants.ALIGN_RIGHT);
 		StyleConstants.setFontFamily(myMessageStyle, "Rubik");
+		StyleConstants.setFontSize(myMessageStyle, fontSize);
 
 		messagesScrollPane = new JScrollPane(messagesTextPane);
 		messagesScrollBar = messagesScrollPane.getVerticalScrollBar();
@@ -277,7 +330,6 @@ public class ClientGUI extends JFrame {
 					Message msg = new Message(MessageType.TextMessage, messageContent);
 					myAgent.SendMessage(talkingNowClientName, msg);
 
-					
 					AddMessageToMessageList(talkingNowClientAlias, messageContent, myMessageStyle);
 					currentMessage.setText("");
 				}
