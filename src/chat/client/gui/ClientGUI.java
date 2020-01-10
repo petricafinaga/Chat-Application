@@ -1,6 +1,6 @@
 /**
  * @author Acroitoritei Calin
- *
+ * @author Finaga Petrica
  * @version 1.0
  * @since 05-12-2019
  **/
@@ -221,22 +221,8 @@ public class ClientGUI extends JFrame {
 					myAgent.SendMessage(talkingNowClientName, msg);
 
 					StyleConstants.setForeground(userNameStyle, myMessageColor);
-					try {
-						DefaultStyledDocument messages = usersMessages.get(talkingNowClientAlias);
-						messages.insertString(messages.getLength(), "Me: ", userNameStyle);
-
-						if (GUIHelper.IsStringEndingWithNewLine(messageContent)) {
-							messages.insertString(messages.getLength(), messageContent, myMessageStyle);
-						} else {
-							messages.insertString(messages.getLength(), messageContent + "\n", myMessageStyle);
-						}
-
-					} catch (BadLocationException e) {
-						e.printStackTrace();
-					} finally {
-						currentMessage.setText("");
-						messagesScrollBar.setValue(messagesScrollBar.getMaximum());
-					}
+					AddMessageToMessageList(talkingNowClientAlias, messageContent, "Me", userNameStyle, myMessageStyle);
+					currentMessage.setText("");
 				}
 			}
 		});
@@ -245,6 +231,40 @@ public class ClientGUI extends JFrame {
 
 	// Add all users into the list
 	public void GUIOnAllClients(ChatClient[] clients) {
+		this.AddClientsToTableModel(clients);
+	}
+
+	// Alter the status of an existing user or add a new user to the list
+	public void GUIOnClientUpdate(ChatClient client) {
+
+		updatesLabel.setText(client.getAlias() + " went " + client.getStatus().toString());
+		for (int i = 0; i < usersTableModel.getRowCount(); i++) {
+			if (usersTableModel.getValueAt(i, 0).equals(client.getAlias())) {
+				usersTableModel.setValueAt(client.getStatus().toString(), i, 1);
+				return;
+			}
+		}
+
+		ChatClient[] clients = { client };
+		this.AddClientsToTableModel(clients);
+	}
+
+	// Display the received message
+	public void GUIOnTextMessage(String clientName, String message) {
+		String clientAlias = "";
+		for (int i = 0; i < usersTableModel.getRowCount(); i++) {
+			if (usersTableModel.getValueAt(i, 2).equals(clientName)) {
+				clientAlias = usersTableModel.getValueAt(i, 0).toString();
+				usersTable.getSelectionModel().setSelectionInterval(i, i);
+				break;
+			}
+		}
+
+		StyleConstants.setForeground(userNameStyle, receivedMessageColor);
+		AddMessageToMessageList(clientAlias, message, clientAlias, userNameStyle, receivedMessageStyle);
+	}
+
+	private void AddClientsToTableModel(ChatClient[] clients) {
 
 		for (ChatClient chatClient : clients) {
 			final Vector<String> data = new Vector<String>();
@@ -259,47 +279,22 @@ public class ClientGUI extends JFrame {
 		}
 	}
 
-	// Alter the status of an existing user or add a new user to the list
-	public void GUIOnClientUpdate(ChatClient client) {
-		boolean found = false;
-		for (int i = 0; i < usersTableModel.getRowCount(); i++) {
-			if (usersTableModel.getValueAt(i, 0).equals(client.getAlias())) {
-				usersTableModel.setValueAt(client.getStatus().toString(), i, 1);
-				found = true;
-			}
-		}
-		if (!found) {
-			Vector<String> data = new Vector<String>();
-			data.add(client.getAlias());
-			data.add(client.getStatus().toString());
-			data.add(client.getName());
-			usersTableModel.addRow(data);
-			// Add messages into the list
-			usersMessages.put(client.getAlias(), new DefaultStyledDocument());
-		}
-		updatesLabel.setText(client.getAlias() + " went " + client.getStatus().toString());
-	}
+	private void AddMessageToMessageList(String alias, String message, String name, Style userStyle,
+			Style messageStyle) {
 
-	// Display the received message
-	public void GUIOnTextMessage(String clientName, String message) {
-		String clientAlias = "";
-		for (int i = 0; i < usersTableModel.getRowCount(); i++) {
-			if (usersTableModel.getValueAt(i, 2).equals(clientName)) {
-				clientAlias = usersTableModel.getValueAt(i, 0).toString();
-				usersTable.getSelectionModel().setSelectionInterval(i, i);
-			}
-		}
-		StyleConstants.setForeground(userNameStyle, receivedMessageColor);
 		try {
-			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowClientAlias).getLength(),
-					clientAlias + ": ", userNameStyle);
-			if (message.charAt(message.length() - 1) != '\n')
+			DefaultStyledDocument messages = usersMessages.get(alias);
+			messages.insertString(messages.getLength(), name + ": ", userStyle);
+
+			if (!GUIHelper.IsStringEndingWithNewLine(message)) {
 				message += "\n";
-			usersMessages.get(clientAlias).insertString(usersMessages.get(talkingNowClientAlias).getLength(), message,
-					receivedMessageStyle);
+			}
+			messages.insertString(messages.getLength(), message, messageStyle);
+
 		} catch (BadLocationException e) {
 			e.printStackTrace();
+		} finally {
+			messagesScrollBar.setValue(messagesScrollBar.getMaximum());
 		}
-		messagesScrollBar.setValue(messagesScrollBar.getMaximum());
 	}
 }
