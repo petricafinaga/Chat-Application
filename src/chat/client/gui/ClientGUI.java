@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
@@ -21,8 +23,12 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -62,15 +68,18 @@ public class ClientGUI extends JFrame {
 	private JTextPane messagesTextPane;
 	private Style receivedMessageStyle;
 	private Style myMessageStyle;
-	private Style userNameStyle;
 	private Color myMessageColor = Color.black;
 	private Color receivedMessageColor = Color.red;
+	private Color windowColor;
 	private String talkingNowClientName = null;
 	private String talkingNowClientAlias = null;
-	private String myAlias;
+	private String myAlias = "defaultUsername";
 	private DefaultTableModel usersTableModel;
 	private Map<String, DefaultStyledDocument> usersMessages;
 	private JScrollBar messagesScrollBar;
+	private JMenuBar menuBar;
+	private JMenu colorsMenu;
+	private JMenuItem receivedMessageColorMenuItem, sentMessageColorMenuItem, windowColorMenuItem;
 
 	/**
 	 * Create the frame.
@@ -83,6 +92,9 @@ public class ClientGUI extends JFrame {
 			myAlias = alias;
 		} else {
 			myAlias = JOptionPane.showInputDialog(contentPane, "Enter your username");
+			while (myAlias == null || GUIHelper.IsStringEmpty(myAlias.trim())) {
+				myAlias = JOptionPane.showInputDialog(contentPane, "Enter your username");
+			}
 			myAgent.UpdateAlias(myAlias);
 		}
 
@@ -95,7 +107,7 @@ public class ClientGUI extends JFrame {
 
 		this.setResizable(false);
 		this.setTitle(myAlias);
-		this.setBounds(100, 100, 851, 486);
+		this.setBounds(100, 100, 851, 509);
 		this.setContentPane(contentPane);
 
 		// Capture GUI close event
@@ -103,6 +115,47 @@ public class ClientGUI extends JFrame {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				myAgent.doDelete();
+			}
+		});
+
+		windowColor = contentPane.getBackground();
+		// Add menubar to the interface
+		menuBar = new JMenuBar();
+		this.setJMenuBar(menuBar);
+		// Insert the menu and the according submenus into the menubar
+		colorsMenu = new JMenu("Colors");
+		receivedMessageColorMenuItem = new JMenuItem("Received message color");
+		sentMessageColorMenuItem = new JMenuItem("Sent message color");
+		windowColorMenuItem = new JMenuItem("Window color");
+		colorsMenu.add(receivedMessageColorMenuItem);
+		colorsMenu.add(sentMessageColorMenuItem);
+		colorsMenu.add(windowColorMenuItem);
+		menuBar.add(colorsMenu);
+
+		// Add event listeners on menu items
+		receivedMessageColorMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				receivedMessageColor = JColorChooser.showDialog(null, "Pick a color for received messages",
+						receivedMessageColor);
+				if (receivedMessageColor != null)
+					StyleConstants.setForeground(receivedMessageStyle, receivedMessageColor);
+			}
+		});
+		sentMessageColorMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				myMessageColor = JColorChooser.showDialog(null, "Pick a color for received messages", myMessageColor);
+				if (myMessageColor != null)
+					StyleConstants.setForeground(myMessageStyle, myMessageColor);
+			}
+		});
+		windowColorMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				windowColor = JColorChooser.showDialog(null, "Pick a color for window background", windowColor);
+				if (windowColor != null)
+					contentPane.setBackground(windowColor);
 			}
 		});
 
@@ -190,10 +243,14 @@ public class ClientGUI extends JFrame {
 		// Styles to show different messages
 		receivedMessageStyle = messagesTextPane.addStyle("", null);
 		myMessageStyle = messagesTextPane.addStyle("", null);
-		userNameStyle = messagesTextPane.addStyle("", null);
+		
 		StyleConstants.setForeground(receivedMessageStyle, receivedMessageColor);
+		StyleConstants.setAlignment(receivedMessageStyle, StyleConstants.ALIGN_LEFT);
+		StyleConstants.setFontFamily(receivedMessageStyle, "Rubik");
+		
 		StyleConstants.setForeground(myMessageStyle, myMessageColor);
-		StyleConstants.setBold(userNameStyle, true);
+		StyleConstants.setAlignment(myMessageStyle, StyleConstants.ALIGN_RIGHT);
+		StyleConstants.setFontFamily(myMessageStyle, "Rubik");
 
 		messagesScrollPane = new JScrollPane(messagesTextPane);
 		messagesScrollBar = messagesScrollPane.getVerticalScrollBar();
@@ -220,8 +277,8 @@ public class ClientGUI extends JFrame {
 					Message msg = new Message(MessageType.TextMessage, messageContent);
 					myAgent.SendMessage(talkingNowClientName, msg);
 
-					StyleConstants.setForeground(userNameStyle, myMessageColor);
-					AddMessageToMessageList(talkingNowClientAlias, messageContent, "Me", userNameStyle, myMessageStyle);
+					
+					AddMessageToMessageList(talkingNowClientAlias, messageContent, myMessageStyle);
 					currentMessage.setText("");
 				}
 			}
@@ -260,8 +317,7 @@ public class ClientGUI extends JFrame {
 			}
 		}
 
-		StyleConstants.setForeground(userNameStyle, receivedMessageColor);
-		AddMessageToMessageList(clientAlias, message, clientAlias, userNameStyle, receivedMessageStyle);
+		AddMessageToMessageList(clientAlias, message, receivedMessageStyle);
 	}
 
 	private void AddClientsToTableModel(ChatClient[] clients) {
@@ -279,16 +335,15 @@ public class ClientGUI extends JFrame {
 		}
 	}
 
-	private void AddMessageToMessageList(String alias, String message, String name, Style userStyle,
-			Style messageStyle) {
+	private void AddMessageToMessageList(String alias, String message, Style messageStyle) {
 
 		try {
 			DefaultStyledDocument messages = usersMessages.get(alias);
-			messages.insertString(messages.getLength(), name + ": ", userStyle);
 
 			if (!GUIHelper.IsStringEndingWithNewLine(message)) {
 				message += "\n";
 			}
+			messages.setLogicalStyle(messages.getLength(), messageStyle);
 			messages.insertString(messages.getLength(), message, messageStyle);
 
 		} catch (BadLocationException e) {
