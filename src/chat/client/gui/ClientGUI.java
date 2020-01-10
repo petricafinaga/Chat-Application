@@ -212,6 +212,11 @@ public class ClientGUI extends JFrame {
 					JOptionPane.showMessageDialog(null, "Please select a user from the list!");
 				} else {
 					String messageContent = currentMessage.getText();
+					if (GUIHelper.IsStringEmpty(messageContent.trim())) {
+						currentMessage.setText("");
+						return;
+					}
+
 					Message msg = new Message(MessageType.TextMessage, messageContent);
 					myAgent.SendMessage(talkingNowClientName, msg);
 
