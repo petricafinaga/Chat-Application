@@ -31,8 +31,10 @@ public final class ServerReceiverBehaviour extends CyclicBehaviour {
 
 		if (null != message) {
 			final Message content = Utils.ToObject(message.getContent(), Message.class);
-			if (content == null)
+			if (content == null) {
+				Utils.LogErrorMessage(myAgent, "Message content couldn't be deserialized!");
 				return;
+			}
 
 			switch (content.getMessageType()) {
 

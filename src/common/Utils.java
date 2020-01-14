@@ -18,16 +18,57 @@ import java.net.UnknownHostException;
 import com.google.gson.Gson;
 
 import chat.client.ClientConfig;
+import jade.core.AID;
+import jade.core.Agent;
+import jade.lang.acl.ACLMessage;
 
 public class Utils {
 	private static final Gson gson = new Gson();
+
+	private static AID loggerAID = null;
 
 	public static <T> String ToJson(T container) {
 		return gson.toJson(container);
 	}
 
 	public static <T> T ToObject(String json, Class<T> className) {
-		return gson.fromJson(json, className);
+
+		try {
+			T object = gson.fromJson(json, className);
+			return object;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public static void InitializeLoggerAgent() {
+
+		loggerAID = new AID();
+		loggerAID.setLocalName("LoggerAgent");
+	}
+
+	public static void LogInformMessage(Agent agent, String content) {
+
+		if (agent == null || loggerAID == null)
+			return;
+
+		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		msg.setContent(content);
+		msg.addReceiver(loggerAID);
+
+		agent.send(msg);
+	}
+
+	public static void LogErrorMessage(Agent agent, String content) {
+
+		if (agent == null || loggerAID == null)
+			return;
+
+		ACLMessage msg = new ACLMessage(ACLMessage.FAILURE);
+		msg.setContent(content);
+		msg.addReceiver(loggerAID);
+
+		agent.send(msg);
 	}
 
 	public static boolean WriteClientConfigToFile(final ClientConfig config, final String fileName) {

@@ -35,6 +35,8 @@ public final class ServerAgent extends Agent {
 
 		final ServerReceiverBehaviour receiverBehaviour = new ServerReceiverBehaviour(this);
 		addBehaviour(receiverBehaviour);
+
+		Utils.InitializeLoggerAgent();
 	}
 
 	protected void OnClientSubscribe(AID aid, ChatClient client) {
@@ -47,6 +49,8 @@ public final class ServerAgent extends Agent {
 
 		final String name = aid.getName();
 		chatClientsMap.put(name, client);
+
+		Utils.LogInformMessage(this, "Agent " + name + " logged in");
 	}
 
 	protected void OnClientUnsubscribe(String name) {
@@ -57,6 +61,8 @@ public final class ServerAgent extends Agent {
 			client.SetStatus(ClientStatus.Offline);
 			NotifyAllOnlineAgents(client);
 		}
+
+		Utils.LogInformMessage(this, "Agent " + name + " logged out");
 	}
 
 	private void SendAllAgentsToClient(AID aid) {
