@@ -2,12 +2,8 @@ package chat.client.gui;
 
 import java.awt.Color;
 
-import javax.swing.text.Style;
-
 public class WindowConfiguration {
 
-	private Style receivedMessageStyle;
-	private Style myMessageStyle;
 	private Color receivedMessageColor;
 	private Color myMessageColor;
 	private Color windowColor;
@@ -21,23 +17,6 @@ public class WindowConfiguration {
 		this.fontSize = 14;
 	}
 	
-	// Received message style
-	public void setReceivedMessageStyle(Style _receivedMsgStyle) {
-		this.receivedMessageStyle = _receivedMsgStyle;
-	}
-
-	public Style getReceivedMessageStyle() {
-		return this.receivedMessageStyle;
-	}
-	
-	// My message style
-	public void setMyMessageStyle(Style _myMsgStyle) {
-		this.myMessageStyle = _myMsgStyle;
-	}
-
-	public Style getMyMessageStyle() {
-		return this.myMessageStyle;
-	}
 	
 	// My message color
 	public void setMyMessageColor(Color _myMsgColor) {
