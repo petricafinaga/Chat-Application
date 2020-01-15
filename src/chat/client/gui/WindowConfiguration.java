@@ -6,8 +6,8 @@ import javax.swing.text.Style;
 
 public class WindowConfiguration {
 
-	private Style receivedMessageStyle;
-	private Style myMessageStyle;
+	private Style receivedMessageStyle;	//TODO remove
+	private Style myMessageStyle;		// TODO remove
 	private Color receivedMessageColor;
 	private Color myMessageColor;
 	private Color windowColor;
