@@ -46,7 +46,7 @@ public final class ClientAgent extends Agent {
 		serverAid.setLocalName(clientConfig.GetServerName());
 		String alias = clientConfig.GetAlias();
 
-		clientGui = new ClientGUI(this, alias);
+		clientGui = new ClientGUI(this, alias, null);
 		clientGui.setVisible(true);
 
 		// Subscribe to Chat Server
