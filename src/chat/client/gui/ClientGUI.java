@@ -96,18 +96,24 @@ public class ClientGUI extends JFrame {
 			myAgent.UpdateAlias(myAlias);
 		}
 
-		if (windowConfiguration != null)
-			windowConfig = windowConfiguration;
-		else
-			windowConfig = new WindowConfiguration();
-
 		usersMessages = new HashMap<String, DefaultStyledDocument>();
 
 		// Window styling
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(null);
-
+		
+		if (windowConfiguration != null)
+		{
+			windowConfig = windowConfiguration;
+			contentPane.setBackground(windowConfig.getWindowColor());
+		}
+		else
+		{
+			windowConfig = new WindowConfiguration();
+			windowConfig.setWindowColor(contentPane.getBackground());
+		}
+		
 		this.setResizable(false);
 		this.setTitle(myAlias);
 		this.setBounds(100, 100, 851, 509);
@@ -122,7 +128,7 @@ public class ClientGUI extends JFrame {
 			}
 		});
 
-		windowConfig.setWindowColor(contentPane.getBackground());
+		contentPane.setBackground(windowConfig.getWindowColor());
 		// Add menubar to the interface
 		menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
