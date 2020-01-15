@@ -115,7 +115,7 @@ public class ClientGUI extends JFrame {
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				// TODO send windowConfig object
+				myAgent.SaveWindowConfiguration(windowConfig);
 				myAgent.doDelete();
 			}
 		});
