@@ -8,6 +8,7 @@
 package chat.client;
 
 import chat.client.gui.ClientGUI;
+import chat.client.gui.WindowConfiguration;
 import common.Message;
 import common.Message.MessageType;
 import common.Utils;
@@ -45,8 +46,9 @@ public final class ClientAgent extends Agent {
 
 		serverAid.setLocalName(clientConfig.GetServerName());
 		String alias = clientConfig.GetAlias();
+		WindowConfiguration windowConfiguration = clientConfig.GetWindowConfiguration();
 
-		clientGui = new ClientGUI(this, alias, null);
+		clientGui = new ClientGUI(this, alias, windowConfiguration);
 		clientGui.setVisible(true);
 
 		// Subscribe to Chat Server
@@ -74,6 +76,11 @@ public final class ClientAgent extends Agent {
 
 	public void OnTextMessage(String clientName, String messageText) {
 		clientGui.GUIOnTextMessage(clientName, messageText);
+	}
+
+	public void SaveWindowConfiguration(WindowConfiguration windowConfig) {
+		clientConfig.SetWindowConfiguration(windowConfig);
+		Utils.WriteClientConfigToFile(clientConfig, configFileName);
 	}
 
 	public void UpdateAlias(String alias) {
