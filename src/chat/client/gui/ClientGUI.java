@@ -7,7 +7,6 @@
 
 package chat.client.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -66,28 +65,23 @@ public class ClientGUI extends JFrame {
 	private JScrollPane usersScrollPane;
 	private JScrollPane currentMessageScrollPane;
 	private JTextPane messagesTextPane;
-	private Style receivedMessageStyle;
-	private Style myMessageStyle;
-	private Color myMessageColor = Color.black;
-	private Color receivedMessageColor = Color.red;
-	private Color windowColor;
 	private String talkingNowClientName = null;
 	private String talkingNowClientAlias = null;
 	private String myAlias;
-	private Integer fontSize = 14;
 	private DefaultTableModel usersTableModel;
 	private Map<String, DefaultStyledDocument> usersMessages;
 	private JScrollBar messagesScrollBar;
 	private JMenuBar menuBar;
 	private JMenu colorsMenu, fontsMenu;
-	private JMenuItem receivedMessageColorMenuItem, sentMessageColorMenuItem, windowColorMenuItem,
-			fontGadugiMenuItem, fontInkFreeMenuItem, fontNirmalaMenuItem, fontRubikMenuItem, fontYuGothicMenuItem;
+	private JMenuItem receivedMessageColorMenuItem, sentMessageColorMenuItem, windowColorMenuItem, fontGadugiMenuItem,
+			fontInkFreeMenuItem, fontNirmalaMenuItem, fontRubikMenuItem, fontYuGothicMenuItem;
+	private WindowConfiguration windowConfig;
 
 	/**
 	 * Create the frame.
 	 */
 
-	public ClientGUI(ClientAgent agent, String alias) {
+	public ClientGUI(ClientAgent agent, String alias, WindowConfiguration windowConfiguration) {
 
 		this.myAgent = agent;
 		if (alias != null) {
@@ -99,6 +93,11 @@ public class ClientGUI extends JFrame {
 			}
 			myAgent.UpdateAlias(myAlias);
 		}
+
+		if (windowConfiguration != null)
+			windowConfig = windowConfiguration;
+		else
+			windowConfig = new WindowConfiguration();
 
 		usersMessages = new HashMap<String, DefaultStyledDocument>();
 
@@ -116,11 +115,12 @@ public class ClientGUI extends JFrame {
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
+				// TODO send windowConfig object
 				myAgent.doDelete();
 			}
 		});
 
-		windowColor = contentPane.getBackground();
+		windowConfig.setWindowColor(contentPane.getBackground());
 		// Add menubar to the interface
 		menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
@@ -152,61 +152,69 @@ public class ClientGUI extends JFrame {
 		receivedMessageColorMenuItem.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				receivedMessageColor = JColorChooser.showDialog(null, "Pick a color for received messages",
-						receivedMessageColor);
-				if (receivedMessageColor != null)
-					StyleConstants.setForeground(receivedMessageStyle, receivedMessageColor);
+				windowConfig.setReceivedMessageColor(JColorChooser.showDialog(null,
+						"Pick a color for received messages", windowConfig.getReceivedMessageColor()));
+				if (windowConfig.getReceivedMessageColor() != null)
+					StyleConstants.setForeground(windowConfig.getReceivedMessageStyle(),
+							windowConfig.getReceivedMessageColor());
 			}
 		});
 		sentMessageColorMenuItem.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				myMessageColor = JColorChooser.showDialog(null, "Pick a color for received messages", myMessageColor);
-				if (myMessageColor != null)
-					StyleConstants.setForeground(myMessageStyle, myMessageColor);
+				windowConfig.setMyMessageColor(JColorChooser.showDialog(null, "Pick a color for received messages",
+						windowConfig.getMyessageColor()));
+				if (windowConfig.getMyessageColor() != null)
+					StyleConstants.setForeground(windowConfig.getMyMessageStyle(), windowConfig.getMyessageColor());
 			}
 		});
 		windowColorMenuItem.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				windowColor = JColorChooser.showDialog(null, "Pick a color for window background", windowColor);
-				if (windowColor != null)
-					contentPane.setBackground(windowColor);
+				windowConfig.setWindowColor(JColorChooser.showDialog(null, "Pick a color for window background",
+						windowConfig.getWindowColor()));
+				if (windowConfig.getWindowColor() != null)
+					contentPane.setBackground(windowConfig.getWindowColor());
 			}
 		});
 		fontGadugiMenuItem.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				StyleConstants.setFontFamily(myMessageStyle, "Gadugi");
-				StyleConstants.setFontFamily(receivedMessageStyle, "Gadugi");
+				windowConfig.setFontName("Gadugi");
+				StyleConstants.setFontFamily(windowConfig.getMyMessageStyle(), windowConfig.getFontName());
+				StyleConstants.setFontFamily(windowConfig.getReceivedMessageStyle(), windowConfig.getFontName());
 			}
 		});
 		fontInkFreeMenuItem.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				StyleConstants.setFontFamily(myMessageStyle, "Ink Free");
-				StyleConstants.setFontFamily(receivedMessageStyle, "Ink Free");
+				windowConfig.setFontName("Ink Free");
+				StyleConstants.setFontFamily(windowConfig.getMyMessageStyle(), windowConfig.getFontName());
+				StyleConstants.setFontFamily(windowConfig.getReceivedMessageStyle(), windowConfig.getFontName());
 			}
 		});
 		fontNirmalaMenuItem.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				StyleConstants.setFontFamily(myMessageStyle, "Nirmala UI");
-				StyleConstants.setFontFamily(receivedMessageStyle, "Nirmala UI");
+				windowConfig.setFontName("Nirmala UI");
+				StyleConstants.setFontFamily(windowConfig.getMyMessageStyle(), windowConfig.getFontName());
+				StyleConstants.setFontFamily(windowConfig.getReceivedMessageStyle(), windowConfig.getFontName());
 			}
 		});
 		fontRubikMenuItem.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				StyleConstants.setFontFamily(myMessageStyle, "Rubik");
-				StyleConstants.setFontFamily(receivedMessageStyle, "Rubik");
+				windowConfig.setFontName("Rubik");
+				StyleConstants.setFontFamily(windowConfig.getMyMessageStyle(), windowConfig.getFontName());
+				StyleConstants.setFontFamily(windowConfig.getReceivedMessageStyle(), windowConfig.getFontName());
 			}
 		});
 		fontYuGothicMenuItem.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				StyleConstants.setFontFamily(myMessageStyle, "Yu Gothic UI Semibold");
-				StyleConstants.setFontFamily(receivedMessageStyle, "Yu Gothic UI Semibold");
+				windowConfig.setFontName("Yu Gothic UI Semibold");
+				StyleConstants.setFontFamily(windowConfig.getMyMessageStyle(), windowConfig.getFontName());
+				StyleConstants.setFontFamily(windowConfig.getReceivedMessageStyle(), windowConfig.getFontName());
 			}
 		});
 
@@ -292,18 +300,18 @@ public class ClientGUI extends JFrame {
 		messagesTextPane.setEditable(false);
 
 		// Styles to show different messages
-		receivedMessageStyle = messagesTextPane.addStyle("", null);
-		myMessageStyle = messagesTextPane.addStyle("", null);
+		windowConfig.setReceivedMessageStyle(messagesTextPane.addStyle("", null));
+		windowConfig.setMyMessageStyle(messagesTextPane.addStyle("", null));
 
-		StyleConstants.setForeground(receivedMessageStyle, receivedMessageColor);
-		StyleConstants.setAlignment(receivedMessageStyle, StyleConstants.ALIGN_LEFT);
-		StyleConstants.setFontFamily(receivedMessageStyle, "Rubik");
-		StyleConstants.setFontSize(receivedMessageStyle, fontSize);
+		StyleConstants.setForeground(windowConfig.getReceivedMessageStyle(), windowConfig.getReceivedMessageColor());
+		StyleConstants.setAlignment(windowConfig.getReceivedMessageStyle(), StyleConstants.ALIGN_LEFT);
+		StyleConstants.setFontFamily(windowConfig.getReceivedMessageStyle(), "Rubik");
+		StyleConstants.setFontSize(windowConfig.getReceivedMessageStyle(), windowConfig.getFontSize());
 
-		StyleConstants.setForeground(myMessageStyle, myMessageColor);
-		StyleConstants.setAlignment(myMessageStyle, StyleConstants.ALIGN_RIGHT);
-		StyleConstants.setFontFamily(myMessageStyle, "Rubik");
-		StyleConstants.setFontSize(myMessageStyle, fontSize);
+		StyleConstants.setForeground(windowConfig.getMyMessageStyle(), windowConfig.getMyessageColor());
+		StyleConstants.setAlignment(windowConfig.getMyMessageStyle(), StyleConstants.ALIGN_RIGHT);
+		StyleConstants.setFontFamily(windowConfig.getMyMessageStyle(), "Rubik");
+		StyleConstants.setFontSize(windowConfig.getMyMessageStyle(), windowConfig.getFontSize());
 
 		messagesScrollPane = new JScrollPane(messagesTextPane);
 		messagesScrollBar = messagesScrollPane.getVerticalScrollBar();
@@ -330,7 +338,7 @@ public class ClientGUI extends JFrame {
 					Message msg = new Message(MessageType.TextMessage, messageContent);
 					myAgent.SendMessage(talkingNowClientName, msg);
 
-					AddMessageToMessageList(talkingNowClientAlias, messageContent, myMessageStyle);
+					AddMessageToMessageList(talkingNowClientAlias, messageContent, windowConfig.getMyMessageStyle());
 					currentMessage.setText("");
 				}
 			}
@@ -369,7 +377,7 @@ public class ClientGUI extends JFrame {
 			}
 		}
 
-		AddMessageToMessageList(clientAlias, message, receivedMessageStyle);
+		AddMessageToMessageList(clientAlias, message, windowConfig.getReceivedMessageStyle());
 	}
 
 	private void AddClientsToTableModel(ChatClient[] clients) {
