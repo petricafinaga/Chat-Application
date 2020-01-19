@@ -1,10 +1,16 @@
 package chat.log;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import common.Utils;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 
 @SuppressWarnings("serial")
 public class LoggerAgentBehaviour extends Behaviour {
+	private final String fLogFileName = "server.log";
 
 	private LoggerAgent myAgent;
 
@@ -22,12 +28,12 @@ public class LoggerAgentBehaviour extends Behaviour {
 
 			// Log INFO message type from server
 			case ACLMessage.INFORM:
-				System.out.println("Log INFO: " + message.getContent());
+				LogToFile("Log INFO: " + message.getContent());
 				break;
 
 			// Log ERROR message type from server
 			case ACLMessage.FAILURE:
-				System.out.println("Log ERROR: " + message.getContent());
+				LogToFile("Log ERROR: " + message.getContent());
 				break;
 
 			default:
@@ -45,4 +51,20 @@ public class LoggerAgentBehaviour extends Behaviour {
 		return false;
 	}
 
+	private void LogToFile(String content) {
+
+		FileWriter fileWriter;
+		try {
+
+			fileWriter = new FileWriter(fLogFileName, true);
+			BufferedWriter writer = new BufferedWriter(fileWriter);
+
+			writer.write(Utils.GetCurrentDate() + " | " + content);
+			writer.newLine(); // Add new line
+			writer.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

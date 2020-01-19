@@ -14,6 +14,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.google.gson.Gson;
 
@@ -126,5 +128,13 @@ public class Utils {
 		}
 
 		return localAddress;
+	}
+
+	public static String GetCurrentDate() {
+
+		Date date = new Date(); // this object contains the current date value
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy/HH:mm:ss");
+
+		return formatter.format(date);
 	}
 }
