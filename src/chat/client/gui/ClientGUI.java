@@ -74,7 +74,7 @@ public class ClientGUI extends JFrame {
 	private Map<String, DefaultStyledDocument> usersMessages;
 	private JScrollBar messagesScrollBar;
 	private JMenuBar menuBar;
-	private JMenu colorsMenu, fontsMenu;
+	private JMenu colorsMenu, fontsMenu, infoMenu;
 	private JMenuItem receivedMessageColorMenuItem, sentMessageColorMenuItem, windowColorMenuItem, fontGadugiMenuItem,
 			fontInkFreeMenuItem, fontNirmalaMenuItem, fontRubikMenuItem, fontYuGothicMenuItem;
 	private WindowConfiguration windowConfig;
@@ -155,6 +155,9 @@ public class ClientGUI extends JFrame {
 		fontsMenu.add(fontRubikMenuItem);
 		fontsMenu.add(fontYuGothicMenuItem);
 		menuBar.add(fontsMenu);
+		
+		infoMenu = new JMenu("Info");
+		menuBar.add(infoMenu);
 
 		// Add event listeners on menu items
 		receivedMessageColorMenuItem.addMouseListener(new MouseAdapter() {
@@ -223,6 +226,12 @@ public class ClientGUI extends JFrame {
 				windowConfig.setFontName("Yu Gothic UI Semibold");
 				StyleConstants.setFontFamily(myMessageStyle, windowConfig.getFontName());
 				StyleConstants.setFontFamily(receivedMessageStyle, windowConfig.getFontName());
+			}
+		});
+		infoMenu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				JOptionPane.showMessageDialog(null, "Authors:\n\tAcroitoritei Calin\n\tFinaga Petrica");
 			}
 		});
 
