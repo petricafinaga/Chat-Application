@@ -74,7 +74,7 @@ public class ClientGUI extends JFrame {
 	private Map<String, DefaultStyledDocument> usersMessages;
 	private JScrollBar messagesScrollBar;
 	private JMenuBar menuBar;
-	private JMenu colorsMenu, fontsMenu;
+	private JMenu colorsMenu, fontsMenu, infoMenu;
 	private JMenuItem receivedMessageColorMenuItem, sentMessageColorMenuItem, windowColorMenuItem, fontGadugiMenuItem,
 			fontInkFreeMenuItem, fontNirmalaMenuItem, fontRubikMenuItem, fontYuGothicMenuItem;
 	private WindowConfiguration windowConfig;
@@ -96,18 +96,24 @@ public class ClientGUI extends JFrame {
 			myAgent.UpdateAlias(myAlias);
 		}
 
-		if (windowConfiguration != null)
-			windowConfig = windowConfiguration;
-		else
-			windowConfig = new WindowConfiguration();
-
 		usersMessages = new HashMap<String, DefaultStyledDocument>();
 
 		// Window styling
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(null);
-
+		
+		if (windowConfiguration != null)
+		{
+			windowConfig = windowConfiguration;
+			contentPane.setBackground(windowConfig.getWindowColor());
+		}
+		else
+		{
+			windowConfig = new WindowConfiguration();
+			windowConfig.setWindowColor(contentPane.getBackground());
+		}
+		
 		this.setResizable(false);
 		this.setTitle(myAlias);
 		this.setBounds(100, 100, 851, 509);
@@ -122,7 +128,7 @@ public class ClientGUI extends JFrame {
 			}
 		});
 
-		windowConfig.setWindowColor(contentPane.getBackground());
+		contentPane.setBackground(windowConfig.getWindowColor());
 		// Add menubar to the interface
 		menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
@@ -149,6 +155,9 @@ public class ClientGUI extends JFrame {
 		fontsMenu.add(fontRubikMenuItem);
 		fontsMenu.add(fontYuGothicMenuItem);
 		menuBar.add(fontsMenu);
+		
+		infoMenu = new JMenu("Info");
+		menuBar.add(infoMenu);
 
 		// Add event listeners on menu items
 		receivedMessageColorMenuItem.addMouseListener(new MouseAdapter() {
@@ -217,6 +226,12 @@ public class ClientGUI extends JFrame {
 				windowConfig.setFontName("Yu Gothic UI Semibold");
 				StyleConstants.setFontFamily(myMessageStyle, windowConfig.getFontName());
 				StyleConstants.setFontFamily(receivedMessageStyle, windowConfig.getFontName());
+			}
+		});
+		infoMenu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				JOptionPane.showMessageDialog(null, "Authors:\n\tAcroitoritei Calin\n\tFinaga Petrica");
 			}
 		});
 
